@@ -1,0 +1,117 @@
+diff --git a/client/src/filters.test.tsx b/client/src/filters.test.tsx
+new file mode 100644
+index 0000000..0d5475d
+--- /dev/null
++++ b/client/src/filters.test.tsx
+@@ -0,0 +1,71 @@
++import { screen, waitFor, within } from '@testing-library/react';
++import userEvent from '@testing-library/user-event';
++import { describe, expect, it } from 'vitest';
++import { mockApi } from './test/mockApi.ts';
++import { renderApp } from './test/renderApp.tsx';
++
++const cardTitles = () => screen.getAllByTestId('recipe-card').map((card) => within(card).getByRole('heading').textContent);
++const location = () => screen.getByTestId('location').textContent;
++
++describe('the filters of the list and the URL', () => {
++  it('writes the search in the URL while the cook types', async () => {
++    mockApi();
++    renderApp('/');
++    await screen.findByText('Lemon Tart');
++
++    await userEvent.type(screen.getByRole('searchbox', { name: 'Search' }), 'pasta');
++
++    await waitFor(() => expect(location()).toBe('/?q=pasta'));
++  });
++
++  it('writes the category, the ingredient and the favorites in the URL', async () => {
++    mockApi();
++    renderApp('/');
++    await screen.findByText('Lemon Tart');
++
++    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Category' }), 'dessert');
++    await waitFor(() => expect(location()).toBe('/?category=dessert'));
++
++    await userEvent.type(screen.getByRole('searchbox', { name: 'Ingredient' }), 'egg');
++    await waitFor(() => expect(new URLSearchParams(location().slice(2)).get('ingredient')).toBe('egg'));
++
++    await userEvent.click(screen.getByRole('checkbox', { name: 'Only favorites' }));
++    await waitFor(() => expect(new URLSearchParams(location().slice(2)).get('favorites')).toBe('true'));
++  });
++
++  it('takes a filter out of the URL when it is cleared', async () => {
++    mockApi();
++    renderApp('/?q=tart');
++    await screen.findByText('Lemon Tart');
++
++    await userEvent.clear(screen.getByRole('searchbox', { name: 'Search' }));
++
++    await waitFor(() => expect(location()).toBe('/'));
++  });
++
++  it('starts from the filters of the URL', async () => {
++    const { requests } = mockApi();
++    renderApp('/?q=a&category=dessert');
++
++    await waitFor(() => expect(cardTitles()).toEqual(['Lemon Tart']));
++    expect(screen.getByRole('searchbox', { name: 'Search' })).toHaveValue('a');
++    expect(screen.getByRole('combobox', { name: 'Category' })).toHaveValue('dessert');
++    expect(requests.at(-1)!.search.toString()).toBe('q=a&category=dessert');
++  });
++
++  it('starts with "Only favorites" checked for favorites=true', async () => {
++    mockApi();
++    renderApp('/?favorites=true');
++
++    await waitFor(() => expect(cardTitles()).toEqual(['Banana Pancakes']));
++    expect(screen.getByRole('checkbox', { name: 'Only favorites' })).toBeChecked();
++  });
++
++  it('ignores a category that does not exist', async () => {
++    mockApi();
++    renderApp('/?category=brunch');
++
++    await waitFor(() => expect(cardTitles()).toHaveLength(4));
++    expect(screen.getByRole('combobox', { name: 'Category' })).toHaveValue('');
++  });
++});
+diff --git a/client/src/filters.ts b/client/src/filters.ts
+index 8dc0816..9ccc890 100644
+--- a/client/src/filters.ts
++++ b/client/src/filters.ts
+@@ -1,15 +1,29 @@
+-import { useState } from 'react';
++import { useSearchParams } from 'react-router';
+ import { CATEGORIES } from './api/types.ts';
+ import type { Category, RecipeFilters } from './api/types.ts';
+ 
+-const NO_FILTERS: RecipeFilters = { q: '', category: '', ingredient: '', favorites: false };
+-
+-/** The filters of the recipe list: what the cook typed and picked above the list. */
++/**
++ * The filters of the recipe list live in the URL (?q=…&category=…&ingredient=…&favorites=true), so
++ * a reload, a shared link and the Back button show the same list.
++ */
+ export function useFilters(): { filters: RecipeFilters; change: (changes: Partial<RecipeFilters>) => void } {
+-  const [filters, setFilters] = useState(NO_FILTERS);
++  const [params, setParams] = useSearchParams();
++  const filters: RecipeFilters = {
++    q: params.get('q') ?? '',
++    category: CATEGORIES.find((category) => category === params.get('category')) ?? '',
++    ingredient: params.get('ingredient') ?? '',
++    favorites: params.get('favorites') === 'true',
++  };
+ 
+   const change = (changes: Partial<RecipeFilters>) => {
+-    setFilters((current) => ({ ...current, ...changes }));
++    const next = new URLSearchParams();
++    for (const [key, value] of Object.entries({ ...filters, ...changes })) {
++      if (value !== '' && value !== false) {
++        next.set(key, String(value));
++      }
++    }
++    // Typing in the search box is one visit to the list, not one per letter.
++    setParams(next, { replace: true });
+   };
+ 
+   return { filters, change };

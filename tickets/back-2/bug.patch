@@ -1,0 +1,26 @@
+diff --git a/server/src/models.ts b/server/src/models.ts
+index cae59f5..4e2fae5 100644
+--- a/server/src/models.ts
++++ b/server/src/models.ts
+@@ -74,7 +74,7 @@ export function defineModels(sequelize: Sequelize): void {
+       description: { type: DataTypes.TEXT, allowNull: false, defaultValue: '' },
+       category: { type: DataTypes.STRING(20), allowNull: false },
+       status: { type: DataTypes.STRING(20), allowNull: false, defaultValue: 'draft' },
+-      servings: { type: DataTypes.INTEGER, allowNull: false },
++      servings: { type: DataTypes.STRING(10), allowNull: false },
+       prepMinutes: { type: DataTypes.INTEGER, allowNull: false },
+       createdAt: DataTypes.DATE,
+       updatedAt: DataTypes.DATE,
+diff --git a/server/src/schemas.ts b/server/src/schemas.ts
+index 0a7cf0f..b86e405 100644
+--- a/server/src/schemas.ts
++++ b/server/src/schemas.ts
+@@ -13,7 +13,7 @@ export const recipeBody = {
+     title: { type: 'string', minLength: 3, maxLength: 120, pattern: NOT_BLANK },
+     description: { type: 'string', maxLength: 500 },
+     category: { type: 'string', enum: CATEGORIES },
+-    servings: { type: 'integer', minimum: 1, maximum: 100 },
++    servings: { type: 'string', maxLength: 10, pattern: NOT_BLANK },
+     // What the text means is checked by parsePrepTime, the one place that knows the formats.
+     prepTime: { type: 'string', maxLength: 20 },
+     photo: {

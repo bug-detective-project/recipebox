@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The first line is right and every other line is a copy of it. The number of lines is right too. So the list is walked correctly, and inside the walk every ingredient ends up with the data of the first one. Find the component that draws the list, and look at what it shows for each ingredient when the servings are not the recipe's.",
+    "`client/src/components/IngredientList.tsx` computes `scaled` and then, when the servings changed, builds `shown` by looking up each ingredient of the recipe in `scaled` with `find`. `find` returns the first item for which the function returns something truthy. Read that function character by character.",
+    "The lookup is `scaled.find((item) => (item.id = ingredient.id))`: one `=`, an assignment. It writes the id into the first item and returns that id, which is truthy, so `find` always stops at the first item. Comparing with `===` fixes the lookup, but the lookup is not needed at all: `scaleIngredients` already returns the ingredients in order, each with its scaled quantity, for any servings. Render `scaled.map(...)` and delete `shown`."
+  ]
+}

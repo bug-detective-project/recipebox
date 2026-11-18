@@ -1,0 +1,120 @@
+{
+  "client": {
+    "name": "Saffron Lane Supper Club",
+    "about": "Saffron Lane Supper Club is a group of neighbors who cook together every Thursday in the kitchen of a community center. RecipeBox is their shared cookbook: what they cooked, how much of each thing, and what everyone thought of it. They read it on a phone propped against a jar, with flour on their hands.",
+    "contacts": "Bianca Moretti (club organizer), Leo Tanaka (volunteer cook) and Ingrid Solberg (who keeps the site running) report the tickets.",
+    "reporters": [
+      {
+        "name": "Bianca Moretti",
+        "role": "Club organizer"
+      },
+      {
+        "name": "Leo Tanaka",
+        "role": "Volunteer cook"
+      },
+      {
+        "name": "Ingrid Solberg",
+        "role": "Site keeper"
+      }
+    ]
+  },
+  "project": {
+    "name": "RecipeBox",
+    "about": "A cookbook shared by a few cooks: recipes with ingredients and steps, quantities that follow the number of servings, a search by text and by ingredient, ratings and favorites. Its data lives in a PostgreSQL database.",
+    "stack": "React, Vite, TanStack Query, React Hook Form and Tailwind; Node.js, Fastify and Sequelize; PostgreSQL",
+    "skills": [
+      "Forms and validation",
+      "Using libraries correctly",
+      "Routes and navigation",
+      "Working with APIs",
+      "Responsive design",
+      "Accessibility",
+      "Input validation",
+      "API design and HTTP",
+      "Databases and queries",
+      "Search, filters and pagination",
+      "Business rules and layers",
+      "Logging in code"
+    ]
+  },
+  "messages": {
+    "welcome": {
+      "subject": "Welcome to the RecipeBox project!",
+      "body": "Hi, and welcome aboard!\n\nI'm Rafaela, the engineering manager here. You're joining **RecipeBox**, the shared cookbook we build for the **Saffron Lane Supper Club**, a group of neighbors who cook together every Thursday. They open it in the kitchen, in the middle of a recipe, so when something is wrong they find out with a pan on the stove.\n\nHere's how we work:\n\n- Your tickets show up on the **Board**. Take one at a time: drag it to **In Progress** when you start, and to **In QA** when you think it's done. Most tickets are bugs to fix; one asks you to build something that is missing, and one to finish something that was left half done.\n- The code lives in your workspace container. **Open in VS Code** attaches your editor to it, with Node, the terminal and the debugger already set up. Run `npm run dev` in the VS Code terminal and use **Open app in browser** to try the cookbook.\n- This project has a real database server: a **PostgreSQL** that runs next to your workspace. The Dashboard shows whether it is ready. To look inside, run `psql \"$DATABASE_URL\"` in the VS Code terminal, and `npm run db:reset` puts the sample cookbook back whenever you want a clean start.\n- The server is built with Fastify and talks to the database through Sequelize; the form of the page uses React Hook Form. If any of them is new to you, read `README.md` first: it says where each kind of code lives.\n- QA runs the project tests first, then checks the ticket itself. If something fails, the card comes back with notes.\n- Stuck? Message **Priya** from the ticket. She'll point you in the right direction, one hint at a time.\n\nWhen you're ready, click **Get next assignment**. I picked a nice first one for you.\n\nRafaela"
+    },
+    "assignments": {
+      "back-1": {
+        "subject": "New ticket: RB-201",
+        "body": "A recipe saved with the time \"1h30\" cannot be saved again from its edit form: the API refuses the same text it accepted when the recipe was created.\n\nCompare the two requests side by side.\n\nRafaela"
+      },
+      "back-2": {
+        "subject": "New ticket: RB-202",
+        "body": "Pressing + on a recipe for 4 gives 41 servings and two kilos of flour. The page only adds one to what the server sends.\n\nFollow the number backwards, from the page to where it is stored.\n\nRafaela"
+      },
+      "back-3": {
+        "subject": "New ticket: RB-203",
+        "body": "Ingrid's clean-up script deleted a recipe that does not exist and was told it worked. The API answers a success for a delete that did nothing.\n\nA short one, and a good look at how the API answers.\n\nRafaela"
+      },
+      "back-4": {
+        "subject": "New ticket: RB-204",
+        "body": "The search cannot find the club's most cooked recipe. Bianca noticed the pattern: only recipes with a photo are ever found.\n\nThe search is one query in the server. Read what the ORM does with it.\n\nRafaela"
+      },
+      "back-5": {
+        "subject": "New ticket: RB-205",
+        "body": "Choosing a category and typing an ingredient gives recipes of every category. Each filter works alone; together, one of them wins.\n\nLook at the place where the filters meet.\n\nRafaela"
+      },
+      "back-6": {
+        "subject": "New ticket: RB-206",
+        "body": "Fixing a typo in a published recipe turns it back into a draft and deletes its ratings for good. Members have stopped correcting recipes.\n\nThe ticket has the rules of the cookbook. Check what an edit writes against them.\n\nRafaela"
+      },
+      "back-7": {
+        "subject": "New ticket: RB-207",
+        "body": "This one is not a bug. Someone replaced the steps of a recipe and nobody can tell who: the log of the server does not say. Ingrid wants one line per change, with the cook.\n\nThe ticket says exactly what the line must have, and what it must not.\n\nRafaela"
+      },
+      "back-8": {
+        "subject": "New ticket: RB-208",
+        "body": "This one is unfinished work. Favorites work in the list; on the recipe page the heart is always empty, and \"Only favorites\" fails. The server side was left half done, with notes in the code.\n\nRead what is there before you add to it.\n\nRafaela"
+      },
+      "front-1": {
+        "subject": "New ticket: RB-101",
+        "body": "Leo took the butter out of a recipe, saved, and the butter was back. The row leaves the form and returns in the saved recipe.\n\nStart by looking at what the page actually sends when the form is saved.\n\nRafaela"
+      },
+      "front-2": {
+        "subject": "New ticket: RB-102",
+        "body": "The cookbook has recipes with no ingredients at all. The form has a rule against that, with a message written and everything, and the rule never fires.\n\nThe form is built with React Hook Form. Read what the rule really means before changing it.\n\nRafaela"
+      },
+      "front-3": {
+        "subject": "New ticket: RB-103",
+        "body": "Bianca searches the cookbook, opens a recipe, comes back, and her search is gone. She also cannot send anyone a link to a search.\n\nThink about where the filters of the list should live.\n\nRafaela"
+      },
+      "front-4": {
+        "subject": "New ticket: RB-104",
+        "body": "After a recipe is edited, the list keeps showing the old one until the page is reloaded. Two members saved the same change twice because of it.\n\nThe server is fine. Look at what the page keeps and when it lets go of it.\n\nRafaela"
+      },
+      "front-5": {
+        "subject": "New ticket: RB-105",
+        "body": "An old link to a deleted recipe opens an empty recipe, with the Publish and Delete buttons on it. A member thought she had broken something.\n\nThe server answers 404 correctly. Find out why the page does not notice.\n\nRafaela"
+      },
+      "front-6": {
+        "subject": "New ticket: RB-106",
+        "body": "The club cooks with a phone propped on the counter, and on a phone the steps of every recipe are cut off on the right. They are guessing oven temperatures.\n\nIt is a small change once you see it. Use the device toolbar of the developer tools.\n\nRafaela"
+      },
+      "front-7": {
+        "subject": "New ticket: RB-107",
+        "body": "A member who uses only the keyboard cannot rate recipes: the stars never get the focus, and her screen reader does not mention them.\n\nThis one matters to Bianca. Try the page yourself without the mouse first.\n\nRafaela"
+      },
+      "front-8": {
+        "subject": "New ticket: RB-108",
+        "body": "When a cook changes the number of servings, the whole ingredient list becomes the first ingredient, repeated. With the recipe's own servings it looks right.\n\nRead the component slowly. It is a short one.\n\nRafaela"
+      }
+    },
+    "completion": {
+      "subject": "RecipeBox: project done!",
+      "body": "You completed the whole {{track}} track of RecipeBox, so this project is done on your side. Bianca says last Thursday was the first club night without anyone shouting a question across the kitchen about the cookbook, and Leo and Ingrid send their thanks too.\n\nYou can keep going with the other tracks of RecipeBox whenever you like. New projects are on their way too.\n\nThanks for the effort.\n\nRafaela"
+    },
+    "trackCompletion": {
+      "subject": "The {{track}} track is done!",
+      "body": "You closed every {{track}} ticket of RecipeBox. Bianca noticed: members are fixing and rating recipes again.\n\nThanks for the effort.\n\nRafaela"
+    }
+  }
+}

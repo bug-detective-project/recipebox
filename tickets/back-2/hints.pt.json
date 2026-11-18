@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "A página faz `servings + 1`. Com um número isso dá 5; com o texto \"4\" dá \"41\". Então não comece pelo botão: siga o valor de trás para a frente. O que o `GET /api/recipes/1` responde em `servings`, e de onde o servidor tira esse valor?",
+    "O servidor monta a resposta no `summaryOf` (`server/src/recipes.ts`) direto do modelo, então o valor vem do banco como está. Abra `server/src/models.ts` e olhe o tipo da coluna `servings`; depois abra `server/src/schemas.ts` e olhe o que o `recipeBody` aceita em `servings`. O TypeScript diz `number` nos dois lugares; o que o Sequelize e o esquema fazem na hora de rodar é outra história.",
+    "A coluna é `DataTypes.STRING(10)` e o esquema diz `type: 'string'`, então as porções são guardadas e respondidas como texto (o Fastify até transforma um número em texto para caber no esquema). Faça a coluna ser `DataTypes.INTEGER` e o esquema `{ type: 'integer', minimum: 1, maximum: 100 }`. A tabela foi criada com uma coluna de texto: rode `npm run db:reset` para ela ser criada de novo a partir do modelo. A página não precisa mudar."
+  ]
+}

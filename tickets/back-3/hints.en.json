@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The API reports a success without checking that anything was deleted. Follow `DELETE /api/recipes/:id` from the route in `server/src/routes/recipes.ts` to the function that talks to the database, and compare it with what reading or editing a recipe does when the recipe is missing.",
+    "`deleteRecipe` in `server/src/recipes.ts` calls `Recipe.destroy({ where: { id } })` and returns. The other functions go through `loadRecipe`, which throws `NotFoundError` when there is no such recipe. `destroy` does not throw when nothing matches: it resolves with the number of rows it removed.",
+    "Keep the count and act on it: `const deleted = Number.isInteger(id) ? await Recipe.destroy({ where: { id } }) : 0;` and, when `deleted === 0`, `throw new NotFoundError('Recipe not found')`. The error handler turns `NotFoundError` into the 404 with that message. An id such as `abc` becomes `NaN` in the route, which is why the integer check comes before the query."
+  ]
+}

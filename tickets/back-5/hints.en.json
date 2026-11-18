@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Each filter works alone, and one of them cancels the others. So look at how the filters are put together into one query, not at any filter by itself. That happens in `listRecipes`, in `server/src/recipes.ts`.",
+    "`listRecipes` builds a `where` object: the category goes in, then the search. The ingredient is different: the recipes that have it are found first, in the `ingredients` table, and their ids are kept in `ids`. Now read the `where` that is finally given to `Recipe.findAll`.",
+    "The query uses `where: ids ? { id: ids } : where`: when there are ids, a brand-new object with only the ids replaces the `where` that held the category and the search. The ids are one more condition, not a replacement: add them to the same object (`if (ids) { where.id = ids; }`) and pass `where` to `findAll`. The conditions of one `where` object are joined with AND."
+  ]
+}

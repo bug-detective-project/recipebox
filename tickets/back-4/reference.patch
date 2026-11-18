@@ -1,0 +1,58 @@
+diff --git a/server/src/recipes.ts b/server/src/recipes.ts
+index e2c3c38..8819348 100644
+--- a/server/src/recipes.ts
++++ b/server/src/recipes.ts
+@@ -110,8 +110,8 @@ export async function listRecipes(filters: ListFilters = {}): Promise<RecipeSumm
+ 
+   const recipes = await Recipe.findAll({
+     where,
+-    // The search reads what the photo shows, so a search needs the photo.
+-    include: [{ model: Photo, as: 'photo', required: Boolean(filters.q) }],
++    // A recipe without a photo is still a recipe: the join must not leave it out.
++    include: [{ model: Photo, as: 'photo', required: false }],
+     order: [
+       ['title', 'ASC'],
+       ['id', 'ASC'],
+diff --git a/server/src/search-without-photo.test.ts b/server/src/search-without-photo.test.ts
+new file mode 100644
+index 0000000..c9da909
+--- /dev/null
++++ b/server/src/search-without-photo.test.ts
+@@ -0,0 +1,37 @@
++import { describe, expect, it } from 'vitest';
++import type { RecipeSummary } from './recipes.ts';
++import { recipeInput, useApi } from './test/api.ts';
++
++const api = useApi();
++
++const search = async (query: string) => (await api.get<RecipeSummary[]>(`/api/recipes?${query}`)).body.map((recipe) => recipe.title);
++
++describe('the search and the recipes without a photo', () => {
++  it('finds a recipe without a photo by its title', async () => {
++    expect(await search('q=pasta')).toEqual(['Garlic Butter Pasta']);
++    expect(await search('q=toastie')).toEqual(['Cheese Toastie']);
++  });
++
++  it('finds a recipe without a photo by its description', async () => {
++    expect(await search('q=weeknight')).toEqual(['Garlic Butter Pasta']);
++  });
++
++  it('lists recipes with and without a photo together', async () => {
++    // "lemon" is in the title of the tart (no photo) and of the chicken (photo), and in a caption.
++    expect(await search('q=lemon')).toEqual(['Lemon Tart', 'Roast Chicken with Lemon']);
++  });
++
++  it('finds a recipe that was just created without a photo', async () => {
++    await api.post('/api/recipes', recipeInput({ title: 'Zucchini Fritters', photo: null }));
++
++    expect(await search('q=zucchini')).toEqual(['Zucchini Fritters']);
++  });
++
++  it('still searches what a photo shows', async () => {
++    expect(await search('q=glass jar')).toEqual(['Overnight Oats']);
++  });
++
++  it('keeps the other filters of a search', async () => {
++    expect(await search('q=lemon&category=dessert')).toEqual(['Lemon Tart']);
++  });
++});

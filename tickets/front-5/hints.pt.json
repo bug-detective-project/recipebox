@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "O servidor responde 404, e a página se comporta como se tivesse recebido uma receita. Siga a resposta da requisição até a página: quem faz a requisição de uma receita, e o que esse código faz com uma resposta que não é de sucesso?",
+    "O `useRecipe` em `client/src/api/recipes.ts` pega os dados do `fetchRecipe`, que chama o `fetch` direto. O `fetch` só rejeita quando a rede falha: para ele um 404 é uma resposta normal, com `response.ok` falso. O `fetchRecipe` nunca olha isso. Ele lê o corpo, `{ \"error\": \"Recipe not found\" }`, e espalha por cima de uma receita vazia.",
+    "Todas as outras chamadas daquele arquivo passam pelo `request` (`client/src/api/http.ts`), que lança um `ApiError` com o status quando a resposta não é de sucesso. Faça o `useRecipe` fazer o mesmo: `queryFn: () => request<RecipeDetail>(`/api/recipes/${id}`)`, e apague o `fetchRecipe` e o `EMPTY_RECIPE`. As páginas já tratam o erro: a `RecipePage` e a página de edição mostram \"Recipe not found\" para um 404 e \"could not be loaded\" para o resto."
+  ]
+}

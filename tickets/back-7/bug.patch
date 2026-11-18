@@ -1,0 +1,88 @@
+diff --git a/server/src/cook.ts b/server/src/cook.ts
+deleted file mode 100644
+index 734336c..0000000
+--- a/server/src/cook.ts
++++ /dev/null
+@@ -1,16 +0,0 @@
+-import type { FastifyRequest } from 'fastify';
+-
+-/** A name the cookbook accepts for a cook: letters, digits, spaces, dots, apostrophes and dashes; 1 to 40. */
+-const COOK_NAME = /^[A-Za-z0-9 .'-]{1,40}$/;
+-
+-export const UNKNOWN_COOK = 'unknown';
+-
+-/**
+- * Who is using the cookbook. There is no login: the client sends the name the cook picked in the
+- * header X-Cook. A request without it, or with something that is not a name, is from "unknown".
+- */
+-export function cookOf(request: FastifyRequest): string {
+-  const header = request.headers['x-cook'];
+-  const name = typeof header === 'string' ? header.trim() : '';
+-  return COOK_NAME.test(name) ? name : UNKNOWN_COOK;
+-}
+diff --git a/server/src/routes/recipes.ts b/server/src/routes/recipes.ts
+index dd62b14..c37098a 100644
+--- a/server/src/routes/recipes.ts
++++ b/server/src/routes/recipes.ts
+@@ -1,6 +1,5 @@
+-import type { FastifyInstance, FastifyRequest } from 'fastify';
++import type { FastifyInstance } from 'fastify';
+ import type { Sequelize } from 'sequelize';
+-import { cookOf } from '../cook.ts';
+ import { createRecipe, deleteRecipe, getRecipe, listRecipes, publishRecipe, rateRecipe, updateRecipe } from '../recipes.ts';
+ import type { ListFilters, RecipeInput } from '../recipes.ts';
+ import { listQuery, ratingBody, recipeBody } from '../schemas.ts';
+@@ -9,16 +8,6 @@ interface Id {
+   id: string;
+ }
+ 
+-type Action = 'created' | 'updated' | 'published' | 'deleted';
+-
+-/**
+- * One line in the log per change to a recipe: what was done, to which recipe and by which cook.
+- * What the cook typed never goes to the log.
+- */
+-function logChange(request: FastifyRequest, action: Action, recipeId: number): void {
+-  request.log.info({ event: 'recipe.changed', action, recipeId, cook: cookOf(request) }, `recipe ${action}`);
+-}
+-
+ export function recipeRoutes(app: FastifyInstance, sequelize: Sequelize): void {
+   app.get<{ Querystring: ListFilters }>('/api/recipes', { schema: { querystring: listQuery } }, (request) => {
+     return listRecipes(request.query);
+@@ -26,7 +15,6 @@ export function recipeRoutes(app: FastifyInstance, sequelize: Sequelize): void {
+ 
+   app.post<{ Body: RecipeInput }>('/api/recipes', { schema: { body: recipeBody } }, async (request, reply) => {
+     const recipe = await createRecipe(sequelize, request.body);
+-    logChange(request, 'created', recipe.id);
+     return reply.status(201).send(recipe);
+   });
+ 
+@@ -34,23 +22,17 @@ export function recipeRoutes(app: FastifyInstance, sequelize: Sequelize): void {
+     return getRecipe(Number(request.params.id));
+   });
+ 
+-  app.put<{ Params: Id; Body: RecipeInput }>('/api/recipes/:id', { schema: { body: recipeBody } }, async (request) => {
+-    const recipe = await updateRecipe(sequelize, Number(request.params.id), request.body);
+-    logChange(request, 'updated', recipe.id);
+-    return recipe;
++  app.put<{ Params: Id; Body: RecipeInput }>('/api/recipes/:id', { schema: { body: recipeBody } }, (request) => {
++    return updateRecipe(sequelize, Number(request.params.id), request.body);
+   });
+ 
+   app.delete<{ Params: Id }>('/api/recipes/:id', async (request, reply) => {
+-    const id = Number(request.params.id);
+-    await deleteRecipe(id);
+-    logChange(request, 'deleted', id);
++    await deleteRecipe(Number(request.params.id));
+     return reply.status(204).send();
+   });
+ 
+-  app.post<{ Params: Id }>('/api/recipes/:id/publish', async (request) => {
+-    const recipe = await publishRecipe(Number(request.params.id));
+-    logChange(request, 'published', recipe.id);
+-    return recipe;
++  app.post<{ Params: Id }>('/api/recipes/:id/publish', (request) => {
++    return publishRecipe(Number(request.params.id));
+   });
+ 
+   app.post<{ Params: Id; Body: { stars: number } }>('/api/recipes/:id/ratings', { schema: { body: ratingBody } }, async (request, reply) => {

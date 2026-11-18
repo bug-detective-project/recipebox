@@ -1,0 +1,119 @@
+diff --git a/server/src/favorites.test.ts b/server/src/favorites.test.ts
+new file mode 100644
+index 0000000..a41c08c
+--- /dev/null
++++ b/server/src/favorites.test.ts
+@@ -0,0 +1,72 @@
++import { describe, expect, it } from 'vitest';
++import type { RecipeDetail, RecipeSummary } from './recipes.ts';
++import { useApi } from './test/api.ts';
++
++const api = useApi();
++
++// In the sample cookbook the pancakes (1), the chicken (4) and the mug cake (6) are favorites.
++const PANCAKES = 1;
++const PASTA = 3;
++
++const favoriteOnPage = async (id: number) => (await api.get<RecipeDetail>(`/api/recipes/${id}`)).body.favorite;
++const favoriteInList = async (id: number) => (await api.get<RecipeSummary[]>('/api/recipes')).body.find((recipe) => recipe.id === id)!.favorite;
++const list = async (query: string) => (await api.get<RecipeSummary[]>(`/api/recipes?${query}`)).body.map((recipe) => recipe.title);
++
++describe('the favorite mark on the recipe itself', () => {
++  it('is there for a favorite and not for the others', async () => {
++    expect(await favoriteOnPage(PANCAKES)).toBe(true);
++    expect(await favoriteOnPage(PASTA)).toBe(false);
++  });
++
++  it('follows the mark being put and taken away, like the list does', async () => {
++    await api.put(`/api/favorites/${PASTA}`);
++    expect(await favoriteOnPage(PASTA)).toBe(true);
++    expect(await favoriteInList(PASTA)).toBe(true);
++
++    expect((await api.delete(`/api/favorites/${PASTA}`)).status).toBe(204);
++    expect(await favoriteOnPage(PASTA)).toBe(false);
++    expect(await favoriteInList(PASTA)).toBe(false);
++  });
++
++  it('is in the answer of an edit too', async () => {
++    const recipe = (await api.post<RecipeDetail>(`/api/recipes/11/publish`)).body;
++    expect(recipe.favorite).toBe(false);
++
++    await api.put('/api/favorites/11');
++
++    expect((await api.post<RecipeDetail>(`/api/recipes/11/publish`)).body.favorite).toBe(true);
++  });
++});
++
++describe('taking a favorite mark away', () => {
++  it('is not an error when the mark is not there', async () => {
++    expect((await api.delete(`/api/favorites/${PASTA}`)).status).toBe(204);
++    expect((await api.delete(`/api/favorites/${PASTA}`)).status).toBe(204);
++  });
++
++  it('answers 404 for a recipe that does not exist', async () => {
++    expect(await api.delete('/api/favorites/999')).toEqual({ status: 404, body: { error: 'Recipe not found' } });
++  });
++});
++
++describe('GET /api/recipes?favorites=true', () => {
++  it('lists only the favorites, by title', async () => {
++    expect(await list('favorites=true')).toEqual(['Banana Pancakes', 'Chocolate Mug Cake', 'Roast Chicken with Lemon']);
++  });
++
++  it('follows the marks', async () => {
++    await api.put(`/api/favorites/${PASTA}`);
++    await api.delete(`/api/favorites/${PANCAKES}`);
++
++    expect(await list('favorites=true')).toEqual(['Chocolate Mug Cake', 'Garlic Butter Pasta', 'Roast Chicken with Lemon']);
++  });
++
++  it('works together with the ingredient filter', async () => {
++    expect(await list('favorites=true&ingredient=egg')).toEqual(['Banana Pancakes', 'Chocolate Mug Cake']);
++    expect(await list('favorites=true&ingredient=honey')).toEqual([]);
++  });
++
++  it('lists everything with favorites=false', async () => {
++    expect(await list('favorites=false')).toHaveLength(12);
++  });
++});
+diff --git a/server/src/recipes.ts b/server/src/recipes.ts
+index 1fceb82..8819348 100644
+--- a/server/src/recipes.ts
++++ b/server/src/recipes.ts
+@@ -101,6 +101,9 @@ export async function listRecipes(filters: ListFilters = {}): Promise<RecipeSumm
+     const matches = await Ingredient.findAll({ attributes: ['recipeId'], where: { name: containing(filters.ingredient) } });
+     ids = matches.map((ingredient) => ingredient.recipeId);
+   }
++  if (filters.favorites) {
++    ids = (ids ?? [...favorites]).filter((id) => favorites.has(id));
++  }
+   if (ids) {
+     where.id = ids;
+   }
+@@ -142,8 +145,7 @@ export async function getRecipe(id: number): Promise<RecipeDetail> {
+   const recipe = await loadRecipe(id);
+   const rating = (await ratingsOf([recipe.id])).get(recipe.id)!;
+   return {
+-    // TODO: the favorite mark of the recipe (the list already has it).
+-    ...summaryOf(recipe, rating, false),
++    ...summaryOf(recipe, rating, (await favoriteIds()).has(recipe.id)),
+     ingredients: recipe.ingredients!.map(({ id: ingredientId, name, quantity, unit }) => ({ id: ingredientId, name, quantity, unit })),
+     steps: recipe.steps!.map(({ id: stepId, text }) => ({ id: stepId, text })),
+   };
+diff --git a/server/src/routes/recipes.ts b/server/src/routes/recipes.ts
+index 7438381..dd62b14 100644
+--- a/server/src/routes/recipes.ts
++++ b/server/src/routes/recipes.ts
+@@ -20,11 +20,7 @@ function logChange(request: FastifyRequest, action: Action, recipeId: number): v
+ }
+ 
+ export function recipeRoutes(app: FastifyInstance, sequelize: Sequelize): void {
+-  app.get<{ Querystring: ListFilters }>('/api/recipes', { schema: { querystring: listQuery } }, (request, reply) => {
+-    // TODO: "Only favorites" of the list.
+-    if (request.query.favorites) {
+-      return reply.status(501).send({ error: 'The favorites filter is not implemented yet' });
+-    }
++  app.get<{ Querystring: ListFilters }>('/api/recipes', { schema: { querystring: listQuery } }, (request) => {
+     return listRecipes(request.query);
+   });
+ 

@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The request of an edit carries no status and no ratings, and both change. So the server writes them on its own while saving. Read what `updateRecipe` in `server/src/recipes.ts` writes, line by line, and where each value it writes comes from.",
+    "`updateRecipe` gets the columns to write from `fieldsOf(input)`, the same function `createRecipe` uses. Look at what `fieldsOf` returns besides what the cook typed. Then look at the last line inside the transaction of `updateRecipe`, and ask whether the rule in its comment is one of the rules of the ticket.",
+    "`fieldsOf` returns `status: 'draft'`. That suits a creation and is wrong for an edit, which writes it over a published recipe. Remove `status` from `fieldsOf`: the model already gives a new recipe the default `'draft'`, and an edit then leaves the status alone. Also delete the `Rating.destroy(...)` of `updateRecipe`: ratings are only removed with the recipe, and the database already does that when a recipe is deleted."
+  ]
+}

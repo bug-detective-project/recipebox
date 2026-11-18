@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "A API informa sucesso sem conferir se alguma coisa foi excluída. Siga o `DELETE /api/recipes/:id` da rota em `server/src/routes/recipes.ts` até a função que fala com o banco, e compare com o que ler ou editar uma receita faz quando a receita não existe.",
+    "O `deleteRecipe` em `server/src/recipes.ts` chama `Recipe.destroy({ where: { id } })` e retorna. As outras funções passam pelo `loadRecipe`, que lança `NotFoundError` quando não há tal receita. O `destroy` não lança erro quando nada casa: ele resolve com o número de linhas que removeu.",
+    "Guarde a contagem e aja a partir dela: `const deleted = Number.isInteger(id) ? await Recipe.destroy({ where: { id } }) : 0;` e, quando `deleted === 0`, `throw new NotFoundError('Recipe not found')`. O tratador de erros transforma o `NotFoundError` no 404 com essa mensagem. Um id como `abc` vira `NaN` na rota, e por isso a conferência de inteiro vem antes da consulta."
+  ]
+}

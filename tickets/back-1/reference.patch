@@ -1,0 +1,96 @@
+diff --git a/server/src/prep-time-on-edit.test.ts b/server/src/prep-time-on-edit.test.ts
+new file mode 100644
+index 0000000..0f5a2ab
+--- /dev/null
++++ b/server/src/prep-time-on-edit.test.ts
+@@ -0,0 +1,45 @@
++import { describe, expect, it } from 'vitest';
++import type { RecipeDetail } from './recipes.ts';
++import { recipeInput, useApi } from './test/api.ts';
++
++const api = useApi();
++
++const DRAFT = 11;
++
++describe('the preparation time, when a recipe is created and when it is edited', () => {
++  it.each([
++    ['45', 45],
++    ['45min', 45],
++    ['45 min', 45],
++    ['1h', 60],
++    ['1h30', 90],
++    ['1h 30min', 90],
++    ['2H15', 135],
++  ])('reads %j the same way in both', async (prepTime, minutes) => {
++    const created = await api.post<RecipeDetail>('/api/recipes', recipeInput({ prepTime }));
++    const edited = await api.put<RecipeDetail>(`/api/recipes/${DRAFT}`, recipeInput({ prepTime }));
++
++    expect(created.status).toBe(201);
++    expect(created.body.prepMinutes).toBe(minutes);
++    expect(edited.status).toBe(200);
++    expect(edited.body.prepMinutes).toBe(minutes);
++  });
++
++  it.each(['', 'soon', 'h30', '1h90', '0'])('refuses %j with the same answer in both', async (prepTime) => {
++    const created = await api.post('/api/recipes', recipeInput({ prepTime }));
++    const edited = await api.put(`/api/recipes/${DRAFT}`, recipeInput({ prepTime }));
++
++    expect(created).toEqual({ status: 400, body: { error: 'Some fields are not valid', fields: { prepTime: 'Write the time like 45 min or 1h30' } } });
++    expect(edited).toEqual(created);
++  });
++
++  it('saves a recipe of more than an hour again without changing its time', async () => {
++    const chicken = (await api.get<RecipeDetail>('/api/recipes/4')).body;
++    expect(chicken.prepMinutes).toBe(90);
++
++    const edited = await api.put<RecipeDetail>('/api/recipes/4', recipeInput({ title: chicken.title, prepTime: '1h30' }));
++
++    expect(edited.status).toBe(200);
++    expect(edited.body.prepMinutes).toBe(90);
++  });
++});
+diff --git a/server/src/routes/recipes.ts b/server/src/routes/recipes.ts
+index 9bf952c..dd62b14 100644
+--- a/server/src/routes/recipes.ts
++++ b/server/src/routes/recipes.ts
+@@ -3,7 +3,7 @@ import type { Sequelize } from 'sequelize';
+ import { cookOf } from '../cook.ts';
+ import { createRecipe, deleteRecipe, getRecipe, listRecipes, publishRecipe, rateRecipe, updateRecipe } from '../recipes.ts';
+ import type { ListFilters, RecipeInput } from '../recipes.ts';
+-import { listQuery, ratingBody, recipeBody, recipeUpdateBody } from '../schemas.ts';
++import { listQuery, ratingBody, recipeBody } from '../schemas.ts';
+ 
+ interface Id {
+   id: string;
+@@ -34,7 +34,7 @@ export function recipeRoutes(app: FastifyInstance, sequelize: Sequelize): void {
+     return getRecipe(Number(request.params.id));
+   });
+ 
+-  app.put<{ Params: Id; Body: RecipeInput }>('/api/recipes/:id', { schema: { body: recipeUpdateBody } }, async (request) => {
++  app.put<{ Params: Id; Body: RecipeInput }>('/api/recipes/:id', { schema: { body: recipeBody } }, async (request) => {
+     const recipe = await updateRecipe(sequelize, Number(request.params.id), request.body);
+     logChange(request, 'updated', recipe.id);
+     return recipe;
+diff --git a/server/src/schemas.ts b/server/src/schemas.ts
+index 3a465ad..0a7cf0f 100644
+--- a/server/src/schemas.ts
++++ b/server/src/schemas.ts
+@@ -47,18 +47,6 @@ export const recipeBody = {
+   },
+ } as const;
+ 
+-/** Minutes, with or without the unit: "45", "45min", "45 min". */
+-const MINUTES_PATTERN = '^\\d+ ?(min)?$';
+-
+-/** The body of an edit: the recipe again, with every field checked like in the creation. */
+-export const recipeUpdateBody = {
+-  ...recipeBody,
+-  properties: {
+-    ...recipeBody.properties,
+-    prepTime: { type: 'string', maxLength: 20, pattern: MINUTES_PATTERN },
+-  },
+-} as const;
+-
+ export const ratingBody = {
+   type: 'object',
+   required: ['stars'],

@@ -1,0 +1,40 @@
+diff --git a/client/src/filters.ts b/client/src/filters.ts
+index 9ccc890..8dc0816 100644
+--- a/client/src/filters.ts
++++ b/client/src/filters.ts
+@@ -1,29 +1,15 @@
+-import { useSearchParams } from 'react-router';
++import { useState } from 'react';
+ import { CATEGORIES } from './api/types.ts';
+ import type { Category, RecipeFilters } from './api/types.ts';
+ 
+-/**
+- * The filters of the recipe list live in the URL (?q=…&category=…&ingredient=…&favorites=true), so
+- * a reload, a shared link and the Back button show the same list.
+- */
++const NO_FILTERS: RecipeFilters = { q: '', category: '', ingredient: '', favorites: false };
++
++/** The filters of the recipe list: what the cook typed and picked above the list. */
+ export function useFilters(): { filters: RecipeFilters; change: (changes: Partial<RecipeFilters>) => void } {
+-  const [params, setParams] = useSearchParams();
+-  const filters: RecipeFilters = {
+-    q: params.get('q') ?? '',
+-    category: CATEGORIES.find((category) => category === params.get('category')) ?? '',
+-    ingredient: params.get('ingredient') ?? '',
+-    favorites: params.get('favorites') === 'true',
+-  };
++  const [filters, setFilters] = useState(NO_FILTERS);
+ 
+   const change = (changes: Partial<RecipeFilters>) => {
+-    const next = new URLSearchParams();
+-    for (const [key, value] of Object.entries({ ...filters, ...changes })) {
+-      if (value !== '' && value !== false) {
+-        next.set(key, String(value));
+-      }
+-    }
+-    // Typing in the search box is one visit to the list, not one per letter.
+-    setParams(next, { replace: true });
++    setFilters((current) => ({ ...current, ...changes }));
+   };
+ 
+   return { filters, change };

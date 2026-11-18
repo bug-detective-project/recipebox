@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "A linha sai da tela, então o formulário sabe que o ingrediente foi removido. Mesmo assim a requisição leva o ingrediente. Alguma coisa entre \"os valores do formulário\" e \"o que é enviado\" coloca ele de volta: veja o que acontece quando o formulário é enviado, em `client/src/components/RecipeForm.tsx`.",
+    "O `handleSubmit` entrega os valores do formulário ao `inputOf`, que monta o que a API recebe. Leia como o `inputOf` monta `ingredients` quando há uma receita sendo editada: ele parte de `editing.ingredients`, as linhas como estavam salvas, e percorre essas linhas pela posição.",
+    "O `inputOf` percorre as linhas salvas e, em cada posição, usa a linha do formulário ou, quando o formulário não tem linha ali, a linha salva (`values.ingredients[index] ?? { name, quantity, unit }`). Depois de uma remoção o formulário tem menos linhas, então as últimas posições caem nas linhas salvas. O formulário já tem a lista inteira: envie `values.ingredients` como está e tire o parâmetro `editing`."
+  ]
+}

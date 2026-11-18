@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The row leaves the screen, so the form knows the ingredient was removed. The request still carries it. Something between \"the values of the form\" and \"what is sent\" puts it back: look at what happens when the form is submitted, in `client/src/components/RecipeForm.tsx`.",
+    "`handleSubmit` gives the values of the form to `inputOf`, which builds what the API gets. Read how `inputOf` builds `ingredients` when there is a recipe being edited: it starts from `editing.ingredients`, the rows as they were saved, and walks them by position.",
+    "`inputOf` maps the saved rows and, for each position, uses the row of the form or, when the form has no row there, the saved one (`values.ingredients[index] ?? { name, quantity, unit }`). After a removal the form has fewer rows, so the last positions fall back to the saved rows. The form already holds the whole list: send `values.ingredients` as it is and drop the `editing` parameter."
+  ]
+}

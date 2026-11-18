@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "A requisição de uma edição não leva status nem avaliações, e os dois mudam. Então o servidor escreve os dois por conta própria ao salvar. Leia o que o `updateRecipe` em `server/src/recipes.ts` grava, linha por linha, e de onde vem cada valor que ele grava.",
+    "O `updateRecipe` pega as colunas a gravar de `fieldsOf(input)`, a mesma função que o `createRecipe` usa. Veja o que o `fieldsOf` devolve além do que a pessoa digitou. Depois veja a última linha dentro da transação do `updateRecipe`, e pergunte se a regra do comentário dela é uma das regras do ticket.",
+    "O `fieldsOf` devolve `status: 'draft'`. Isso serve para uma criação e está errado para uma edição, que grava esse valor por cima de uma receita publicada. Tire o `status` do `fieldsOf`: o modelo já dá a uma receita nova o padrão `'draft'`, e uma edição passa a deixar o status em paz. Apague também o `Rating.destroy(...)` do `updateRecipe`: avaliações só são removidas junto com a receita, e o banco já faz isso quando uma receita é apagada."
+  ]
+}

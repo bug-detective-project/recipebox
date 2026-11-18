@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Os filtros funcionam enquanto a lista está na tela e se perdem sempre que a lista é mostrada de novo. Então pergunte onde eles ficam guardados. Um valor guardado dentro de um componente vive exatamente o tempo do componente: sair da página acaba com ele. Ache onde a lista de receitas guarda os filtros.",
+    "A `RecipesPage` recebe `filters` e `change` do `useFilters`, em `client/src/filters.ts`. Hoje o hook guarda os filtros em `useState`. O endereço da página pode guardar os mesmos quatro valores, sobrevive a recarregar e ao botão Voltar, e pode ser copiado para uma mensagem. O React Router lê e escreve o endereço com `useSearchParams`.",
+    "Reescreva o `useFilters` em cima do `useSearchParams`: leia `q`, `category`, `ingredient` e `favorites` dos parâmetros (categoria desconhecida conta como nenhuma, `favorites` só é verdadeiro para `'true'`), e faça o `change` montar o próximo `URLSearchParams` com os filtros atuais mais as mudanças, deixando de fora valores vazios e `false`. Chame `setParams(next, { replace: true })` para que digitar não crie uma entrada no histórico por letra. A `RecipesPage` não precisa mudar."
+  ]
+}

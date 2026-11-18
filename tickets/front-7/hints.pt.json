@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "O coração e os botões de porções são alcançados com Tab, e as estrelas não. Compare os elementos: abra as ferramentas de desenvolvedor em uma estrela e no coração, e veja qual elemento HTML é cada um. O navegador decide o que recebe foco e o que o Espaço faz a partir do próprio elemento.",
+    "As estrelas são desenhadas por `client/src/components/RatingStars.tsx` como elementos `<span>` com um `onClick`. Para o navegador um span é texto comum: não entra na ordem do Tab, uma tecla não clica nele, e a tecnologia assistiva não fica sabendo que ele faz alguma coisa. O `title` só mostra uma dica para o mouse.",
+    "Faça de cada estrela um `<button type=\"button\">`: botões recebem foco, Espaço e Enter clicam neles, e o leitor de tela os anuncia. Dê a cada um `aria-label` com `1 star`, `2 stars`… (pode manter o `title`), marque o símbolo ★ de dentro com `aria-hidden` e passe `disabled` para o botão, em vez de ignorar o clique à mão. Agrupe com `role=\"group\"` e `aria-label=\"Rate this recipe\"`. O anel de foco vem da regra `:focus-visible` do `styles.css`. A prévia que preenche as estrelas no hover também pode seguir o foco (`onFocus`/`onBlur`)."
+  ]
+}

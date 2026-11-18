@@ -1,0 +1,16 @@
+diff --git a/server/src/recipes.ts b/server/src/recipes.ts
+index 8819348..69f45ed 100644
+--- a/server/src/recipes.ts
++++ b/server/src/recipes.ts
+@@ -208,9 +208,8 @@ export async function updateRecipe(sequelize: Sequelize, id: number, input: Reci
+ }
+ 
+ export async function deleteRecipe(id: number): Promise<void> {
+-  const deleted = Number.isInteger(id) ? await Recipe.destroy({ where: { id } }) : 0;
+-  if (deleted === 0) {
+-    throw new NotFoundError('Recipe not found');
++  if (Number.isInteger(id)) {
++    await Recipe.destroy({ where: { id } });
+   }
+ }
+ 

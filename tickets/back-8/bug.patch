@@ -1,0 +1,41 @@
+diff --git a/server/src/recipes.ts b/server/src/recipes.ts
+index 8819348..1fceb82 100644
+--- a/server/src/recipes.ts
++++ b/server/src/recipes.ts
+@@ -101,9 +101,6 @@ export async function listRecipes(filters: ListFilters = {}): Promise<RecipeSumm
+     const matches = await Ingredient.findAll({ attributes: ['recipeId'], where: { name: containing(filters.ingredient) } });
+     ids = matches.map((ingredient) => ingredient.recipeId);
+   }
+-  if (filters.favorites) {
+-    ids = (ids ?? [...favorites]).filter((id) => favorites.has(id));
+-  }
+   if (ids) {
+     where.id = ids;
+   }
+@@ -145,7 +142,8 @@ export async function getRecipe(id: number): Promise<RecipeDetail> {
+   const recipe = await loadRecipe(id);
+   const rating = (await ratingsOf([recipe.id])).get(recipe.id)!;
+   return {
+-    ...summaryOf(recipe, rating, (await favoriteIds()).has(recipe.id)),
++    // TODO: the favorite mark of the recipe (the list already has it).
++    ...summaryOf(recipe, rating, false),
+     ingredients: recipe.ingredients!.map(({ id: ingredientId, name, quantity, unit }) => ({ id: ingredientId, name, quantity, unit })),
+     steps: recipe.steps!.map(({ id: stepId, text }) => ({ id: stepId, text })),
+   };
+diff --git a/server/src/routes/recipes.ts b/server/src/routes/recipes.ts
+index dd62b14..7438381 100644
+--- a/server/src/routes/recipes.ts
++++ b/server/src/routes/recipes.ts
+@@ -20,7 +20,11 @@ function logChange(request: FastifyRequest, action: Action, recipeId: number): v
+ }
+ 
+ export function recipeRoutes(app: FastifyInstance, sequelize: Sequelize): void {
+-  app.get<{ Querystring: ListFilters }>('/api/recipes', { schema: { querystring: listQuery } }, (request) => {
++  app.get<{ Querystring: ListFilters }>('/api/recipes', { schema: { querystring: listQuery } }, (request, reply) => {
++    // TODO: "Only favorites" of the list.
++    if (request.query.favorites) {
++      return reply.status(501).send({ error: 'The favorites filter is not implemented yet' });
++    }
+     return listRecipes(request.query);
+   });
+ 

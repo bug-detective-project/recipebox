@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "A mensagem existe e a regra existe, e a regra nunca reclama de uma lista vazia. Antes de mudar qualquer coisa, ache onde a regra da lista de ingredientes é declarada em `client/src/components/RecipeForm.tsx` e leia o que a documentação do React Hook Form diz sobre esse tipo de regra.",
+    "A regra está no `useFieldArray` dos ingredientes: `rules: { minLength: { value: 1, message: … } }`. No React Hook Form, `minLength` e `maxLength` só são conferidos quando o campo tem valor: valor vazio é assunto do `required`. Um array vazio conta como vazio, então o `minLength: 1` nem chega a ser olhado quando a última linha é removida.",
+    "Troque a regra por uma que rode para a lista vazia: `rules: { validate: (items) => items.length > 0 || 'Add at least one ingredient' }`. A mensagem de uma regra da lista inteira chega em `errors.ingredients.root`, que o formulário já mostra. O `handleSubmit` não chama o `save` enquanto uma regra falha, então nada é enviado."
+  ]
+}

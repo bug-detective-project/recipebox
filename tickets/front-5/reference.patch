@@ -1,0 +1,104 @@
+diff --git a/client/src/api/recipes.ts b/client/src/api/recipes.ts
+index 18dba0e..82d4270 100644
+--- a/client/src/api/recipes.ts
++++ b/client/src/api/recipes.ts
+@@ -1,5 +1,4 @@
+ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+-import { currentCook } from '../cook.ts';
+ import { request } from './http.ts';
+ import type { RatingSummary, RecipeDetail, RecipeFilters, RecipeInput, RecipeSummary } from './types.ts';
+ 
+@@ -22,33 +21,10 @@ export function useRecipes(filters: RecipeFilters) {
+   });
+ }
+ 
+-/** What a recipe has when the answer of the API leaves a field out. */
+-const EMPTY_RECIPE: RecipeDetail = {
+-  id: 0,
+-  title: '',
+-  description: '',
+-  category: 'main',
+-  status: 'draft',
+-  servings: 1,
+-  prepMinutes: 0,
+-  photo: null,
+-  rating: { average: null, count: 0 },
+-  favorite: false,
+-  ingredients: [],
+-  steps: [],
+-};
+-
+-/** One recipe, with every field the page reads filled in. */
+-async function fetchRecipe(id: string | undefined): Promise<RecipeDetail> {
+-  const response = await fetch(`/api/recipes/${id}`, { headers: { 'X-Cook': currentCook() } });
+-  const data = (await response.json()) as Partial<RecipeDetail>;
+-  return { ...EMPTY_RECIPE, ...data };
+-}
+-
+ export function useRecipe(id: string | undefined) {
+   return useQuery({
+     queryKey: ['recipes', 'detail', id],
+-    queryFn: () => fetchRecipe(id),
++    queryFn: () => request<RecipeDetail>(`/api/recipes/${id}`),
+     enabled: id !== undefined,
+   });
+ }
+diff --git a/client/src/pages/RecipePage.missing.test.tsx b/client/src/pages/RecipePage.missing.test.tsx
+new file mode 100644
+index 0000000..9534866
+--- /dev/null
++++ b/client/src/pages/RecipePage.missing.test.tsx
+@@ -0,0 +1,53 @@
++import { screen } from '@testing-library/react';
++import { describe, expect, it } from 'vitest';
++import { json, mockApi } from '../test/mockApi.ts';
++import { renderApp } from '../test/renderApp.tsx';
++
++describe('a recipe the API does not have', () => {
++  it.each(['/recipes/999', '/recipes/abc'])('shows "Recipe not found" at %s', async (path) => {
++    mockApi();
++    renderApp(path);
++
++    expect(await screen.findByRole('heading', { name: 'Recipe not found' })).toBeInTheDocument();
++    expect(screen.getByRole('link', { name: 'Back to the recipes' })).toHaveAttribute('href', '/');
++  });
++
++  it('shows nothing of a recipe: no ingredients, no steps, no buttons', async () => {
++    mockApi();
++    renderApp('/recipes/999');
++    await screen.findByRole('heading', { name: 'Recipe not found' });
++
++    expect(screen.queryByRole('heading', { name: 'Ingredients' })).not.toBeInTheDocument();
++    expect(screen.queryByRole('heading', { name: 'Steps' })).not.toBeInTheDocument();
++    expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
++    expect(screen.queryByRole('link', { name: 'Edit' })).not.toBeInTheDocument();
++    expect(screen.queryByTestId('servings')).not.toBeInTheDocument();
++  });
++
++  it('shows "Recipe not found" instead of an empty edit form', async () => {
++    mockApi();
++    renderApp('/recipes/999/edit');
++
++    expect(await screen.findByRole('heading', { name: 'Recipe not found' })).toBeInTheDocument();
++    expect(screen.queryByRole('button', { name: 'Save recipe' })).not.toBeInTheDocument();
++  });
++});
++
++describe('a recipe the API could not answer', () => {
++  it('says that the recipe could not be loaded', async () => {
++    mockApi({ respond: (request) => (request.path === '/api/recipes/1' ? json({ error: 'Internal server error' }, 500) : undefined) });
++    renderApp('/recipes/1');
++
++    expect(await screen.findByRole('alert')).toHaveTextContent('The recipe could not be loaded.');
++    expect(screen.queryByRole('heading', { name: 'Ingredients' })).not.toBeInTheDocument();
++  });
++});
++
++describe('a recipe the API has', () => {
++  it('is still shown', async () => {
++    mockApi();
++    renderApp('/recipes/2');
++
++    expect(await screen.findByRole('heading', { name: 'Garlic Butter Pasta', level: 1 })).toBeInTheDocument();
++  });
++});

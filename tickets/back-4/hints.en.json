@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Without a search every recipe is listed; with one, only those with a photo. So the search does not just add a condition on the text: it also changes which recipes can be in the result at all. Read how `listRecipes` in `server/src/recipes.ts` builds its query when `q` is given.",
+    "The search compares `q` with the title, the description and `$photo.caption$`, a column of the `photos` table, so the query joins that table: `include: [{ model: Photo, as: 'photo', required: … }]`. Look at `required`. In Sequelize, `required: true` makes an INNER JOIN, which keeps only the recipes that have a row on the other side; `required: false` makes a LEFT JOIN, which keeps every recipe and leaves the photo empty when there is none.",
+    "The include has `required: Boolean(filters.q)`: the moment there is a search, the join becomes an inner join and every recipe without a photo is dropped before the text is even compared. Use `required: false` always. The `Op.or` still works: for a recipe without a photo the caption is NULL, that part of the OR is simply not true, and the title and the description decide."
+  ]
+}

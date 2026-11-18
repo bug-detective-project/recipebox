@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "A primeira linha está certa e todas as outras são cópia dela. O número de linhas também está certo. Então a lista é percorrida direito, e dentro do percurso todo ingrediente acaba com os dados do primeiro. Ache o componente que desenha a lista e veja o que ele mostra para cada ingrediente quando as porções não são as da receita.",
+    "O `client/src/components/IngredientList.tsx` calcula `scaled` e depois, quando as porções mudaram, monta `shown` procurando cada ingrediente da receita em `scaled` com `find`. O `find` devolve o primeiro item para o qual a função devolve algo verdadeiro. Leia essa função caractere por caractere.",
+    "A procura é `scaled.find((item) => (item.id = ingredient.id))`: um `=` só, uma atribuição. Ela escreve o id no primeiro item e devolve esse id, que é verdadeiro, então o `find` sempre para no primeiro item. Comparar com `===` conserta a procura, mas a procura nem é necessária: o `scaleIngredients` já devolve os ingredientes em ordem, cada um com a quantidade ajustada, para quaisquer porções. Desenhe `scaled.map(...)` e apague o `shown`."
+  ]
+}

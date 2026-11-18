@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Before writing code, find what exists. Search the server for `TODO`: there are two, one for each item of the ticket. Then read how `listRecipes` in `server/src/recipes.ts` fills the `favorite` of each recipe of the list: there is a helper that answers the ids of every favorite.",
+    "For the recipe: `getRecipe` calls `summaryOf(recipe, rating, false)`. The third argument is the favorite mark, and `favoriteIds()` returns a `Set` with the ids of the favorites, so the real value is one expression away. Every answer with a whole recipe goes through `getRecipe`, so the edit and the publish are fixed with it. For the filter: the route in `server/src/routes/recipes.ts` answers 501 before calling `listRecipes`; `listRecipes` already receives `filters.favorites`.",
+    "In `listRecipes`, the ingredient filter narrows the result with `ids`, the list of recipe ids allowed, which is then added to the `where`. Favorites can use the same mechanism: when `filters.favorites` is true, `ids = (ids ?? [...favorites]).filter((id) => favorites.has(id))`: the favorites alone, or the ingredient matches that are also favorites. Then remove the 501 from the route so the request reaches `listRecipes`. Because the ids go into the same `where` as the category and the search, every combination works."
+  ]
+}

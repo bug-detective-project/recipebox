@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The page does `servings + 1`. With a number that is 5; with the text \"4\" it is \"41\". So do not start at the button: follow the value backwards. What does `GET /api/recipes/1` answer for `servings`, and where does the server get that value from?",
+    "The server builds the answer in `summaryOf` (`server/src/recipes.ts`) straight from the model, so the value comes from the database as it is. Open `server/src/models.ts` and look at the type of the `servings` column, then open `server/src/schemas.ts` and look at what `recipeBody` accepts for `servings`. TypeScript says `number` in both places; what Sequelize and the schema do at run time is another matter.",
+    "The column is `DataTypes.STRING(10)` and the schema says `type: 'string'`, so the servings are stored and answered as text (Fastify even turns a number into text to fit the schema). Make the column `DataTypes.INTEGER` and the schema `{ type: 'integer', minimum: 1, maximum: 100 }`. The table was created with a text column: run `npm run db:reset` so it is created again from the model. The page needs no change."
+  ]
+}

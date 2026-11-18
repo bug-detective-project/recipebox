@@ -1,0 +1,45 @@
+diff --git a/server/src/routes/recipes.ts b/server/src/routes/recipes.ts
+index dd62b14..9bf952c 100644
+--- a/server/src/routes/recipes.ts
++++ b/server/src/routes/recipes.ts
+@@ -3,7 +3,7 @@ import type { Sequelize } from 'sequelize';
+ import { cookOf } from '../cook.ts';
+ import { createRecipe, deleteRecipe, getRecipe, listRecipes, publishRecipe, rateRecipe, updateRecipe } from '../recipes.ts';
+ import type { ListFilters, RecipeInput } from '../recipes.ts';
+-import { listQuery, ratingBody, recipeBody } from '../schemas.ts';
++import { listQuery, ratingBody, recipeBody, recipeUpdateBody } from '../schemas.ts';
+ 
+ interface Id {
+   id: string;
+@@ -34,7 +34,7 @@ export function recipeRoutes(app: FastifyInstance, sequelize: Sequelize): void {
+     return getRecipe(Number(request.params.id));
+   });
+ 
+-  app.put<{ Params: Id; Body: RecipeInput }>('/api/recipes/:id', { schema: { body: recipeBody } }, async (request) => {
++  app.put<{ Params: Id; Body: RecipeInput }>('/api/recipes/:id', { schema: { body: recipeUpdateBody } }, async (request) => {
+     const recipe = await updateRecipe(sequelize, Number(request.params.id), request.body);
+     logChange(request, 'updated', recipe.id);
+     return recipe;
+diff --git a/server/src/schemas.ts b/server/src/schemas.ts
+index 0a7cf0f..3a465ad 100644
+--- a/server/src/schemas.ts
++++ b/server/src/schemas.ts
+@@ -47,6 +47,18 @@ export const recipeBody = {
+   },
+ } as const;
+ 
++/** Minutes, with or without the unit: "45", "45min", "45 min". */
++const MINUTES_PATTERN = '^\\d+ ?(min)?$';
++
++/** The body of an edit: the recipe again, with every field checked like in the creation. */
++export const recipeUpdateBody = {
++  ...recipeBody,
++  properties: {
++    ...recipeBody.properties,
++    prepTime: { type: 'string', maxLength: 20, pattern: MINUTES_PATTERN },
++  },
++} as const;
++
+ export const ratingBody = {
+   type: 'object',
+   required: ['stars'],

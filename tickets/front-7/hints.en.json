@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The heart and the servings buttons are reached with Tab and the stars are not. Compare the elements: open the developer tools on a star and on the heart, and see which HTML element each one is. The browser decides what gets the focus and what Space does from the element itself.",
+    "The stars are drawn by `client/src/components/RatingStars.tsx` as `<span>` elements with an `onClick`. A span is plain text for the browser: it is not in the Tab order, a key press does not click it, and assistive technology is not told it does anything. The `title` only shows a tooltip for the mouse.",
+    "Make each star a `<button type=\"button\">`: buttons are focusable, Space and Enter click them, and a screen reader announces them. Give each one `aria-label` with `1 star`, `2 stars`… (keep the `title` if you like), mark the ★ glyph inside as `aria-hidden`, and pass `disabled` to the button instead of ignoring the click by hand. Group them with `role=\"group\"` and `aria-label=\"Rate this recipe\"`. The focus ring comes from the `:focus-visible` rule of `styles.css`. The preview that fills the stars on hover can also follow the focus (`onFocus`/`onBlur`)."
+  ]
+}

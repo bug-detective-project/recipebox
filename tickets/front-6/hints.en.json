@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The text is cut off, and nothing lets you scroll to the rest. That is two things at once: something is wider than the screen, and something is hiding what sticks out. Inspect a step in the developer tools with a narrow window and look at the width of the text and at the list around it.",
+    "The steps are drawn by `client/src/components/StepList.tsx`. The paragraph of a step has `w-[38rem]` and `shrink-0`: a fixed width of 608px that is not allowed to shrink. The list has `overflow-x-hidden`, which cuts what does not fit. On a laptop 608px fits; on a 375px phone it does not.",
+    "Let the text take the space that is left instead of a fixed width: on the paragraph, replace `w-[38rem] shrink-0` with `min-w-0 flex-1` (in a flex row, `min-w-0` is what allows an item to become narrower than its content) and add `break-words` for very long words. Remove `overflow-x-hidden` from the list: once the text wraps there is nothing to hide, and hiding is what made the problem unreadable instead of merely ugly."
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Two requests take the same body and disagree about one field. Each route says how its body is checked. Open `server/src/routes/recipes.ts` and compare the `schema` of `POST /api/recipes` with the one of `PUT /api/recipes/:id`.",
+    "`POST` uses `recipeBody` and `PUT` uses `recipeUpdateBody`, both in `server/src/schemas.ts`. `recipeUpdateBody` copies `recipeBody` and replaces `prepTime` with a `pattern`: `^\\d+ ?(min)?$`, digits with an optional \"min\". Fastify refuses the request before the route runs, which is why the message is the pattern itself. Now look at who decides what a time is for the creation: `parsePrepTime` in `server/src/duration.ts`.",
+    "There should be one place that knows the formats, and it exists: `parsePrepTime`, which both `createRecipe` and `updateRecipe` already call through `fieldsOf`. The second rule in the schema of the edit is older and narrower. Make `PUT` use `recipeBody` and delete `recipeUpdateBody` and `MINUTES_PATTERN`. Do not \"fix\" the pattern to accept hours: two descriptions of the same format are what caused this."
+  ]
+}

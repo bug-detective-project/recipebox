@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Sem busca, todas as receitas são listadas; com busca, só as que têm foto. Então a busca não acrescenta só uma condição sobre o texto: ela também muda quais receitas podem estar no resultado. Leia como o `listRecipes` em `server/src/recipes.ts` monta a consulta quando há `q`.",
+    "A busca compara `q` com o título, a descrição e `$photo.caption$`, uma coluna da tabela `photos`, então a consulta junta essa tabela: `include: [{ model: Photo, as: 'photo', required: … }]`. Olhe o `required`. No Sequelize, `required: true` faz um INNER JOIN, que mantém só as receitas que têm linha do outro lado; `required: false` faz um LEFT JOIN, que mantém todas as receitas e deixa a foto vazia quando não há.",
+    "O include tem `required: Boolean(filters.q)`: basta haver uma busca para a junção virar inner join e toda receita sem foto ser descartada antes mesmo de o texto ser comparado. Use `required: false` sempre. O `Op.or` continua funcionando: para uma receita sem foto a legenda é NULL, essa parte do OU simplesmente não é verdadeira, e o título e a descrição decidem."
+  ]
+}

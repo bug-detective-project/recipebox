@@ -1,0 +1,15 @@
+diff --git a/server/src/recipes.ts b/server/src/recipes.ts
+index 8819348..e2c3c38 100644
+--- a/server/src/recipes.ts
++++ b/server/src/recipes.ts
+@@ -110,8 +110,8 @@ export async function listRecipes(filters: ListFilters = {}): Promise<RecipeSumm
+ 
+   const recipes = await Recipe.findAll({
+     where,
+-    // A recipe without a photo is still a recipe: the join must not leave it out.
+-    include: [{ model: Photo, as: 'photo', required: false }],
++    // The search reads what the photo shows, so a search needs the photo.
++    include: [{ model: Photo, as: 'photo', required: Boolean(filters.q) }],
+     order: [
+       ['title', 'ASC'],
+       ['id', 'ASC'],

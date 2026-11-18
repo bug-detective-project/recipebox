@@ -1,0 +1,13 @@
+{
+  "type": "fix",
+  "skills": {
+    "en": [
+      "Regular expressions",
+      "Input validation"
+    ],
+    "pt": [
+      "Expressões regulares",
+      "Validação de entrada"
+    ]
+  }
+}

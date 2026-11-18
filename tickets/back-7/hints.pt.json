@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Comece olhando o que o servidor registra hoje: rode `npm run dev`, salve uma receita pela página e leia as linhas no terminal. São JSON escrito pelo logger do Fastify. Uma rota pode acrescentar a própria linha com `request.log.info(campos, mensagem)`; por ser o logger da requisição, a linha ganha o `reqId` sozinha.",
+    "São duas peças pequenas. Primeiro, uma função que responde quem está cozinhando: leia `request.headers['x-cook']`, tire os espaços em volta e só devolva o valor se ele casar com a regra do ticket (uma expressão regular ancorada nas duas pontas, como `/^[A-Za-z0-9 .'-]{1,40}$/`); senão, `'unknown'`. Segundo, em `server/src/routes/recipes.ts`, uma função `logChange(request, action, recipeId)` que chama `request.log.info({ event: 'recipe.changed', action, recipeId, cook }, …)`.",
+    "Chame o `logChange` nas quatro rotas que alteram uma receita, **depois** do `await` da função que faz a alteração: se a alteração lançar erro (400, 404, 409), a linha nunca é alcançada, que é exatamente a regra \"só o que aconteceu\". Na exclusão, guarde o id em uma variável antes de excluir. Registre só os quatro campos: não passe `request.body` nem a receita para o logger."
+  ]
+}

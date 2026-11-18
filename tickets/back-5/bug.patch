@@ -1,0 +1,19 @@
+diff --git a/server/src/recipes.ts b/server/src/recipes.ts
+index 8819348..f859d93 100644
+--- a/server/src/recipes.ts
++++ b/server/src/recipes.ts
+@@ -104,12 +104,10 @@ export async function listRecipes(filters: ListFilters = {}): Promise<RecipeSumm
+   if (filters.favorites) {
+     ids = (ids ?? [...favorites]).filter((id) => favorites.has(id));
+   }
+-  if (ids) {
+-    where.id = ids;
+-  }
+ 
+   const recipes = await Recipe.findAll({
+-    where,
++    // The ids were already picked from the recipes that match: nothing else to filter.
++    where: ids ? { id: ids } : where,
+     // A recipe without a photo is still a recipe: the join must not leave it out.
+     include: [{ model: Photo, as: 'photo', required: false }],
+     order: [

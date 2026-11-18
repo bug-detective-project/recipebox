@@ -1,0 +1,58 @@
+diff --git a/server/src/ingredient-with-filters.test.ts b/server/src/ingredient-with-filters.test.ts
+new file mode 100644
+index 0000000..7376819
+--- /dev/null
++++ b/server/src/ingredient-with-filters.test.ts
+@@ -0,0 +1,33 @@
++import { describe, expect, it } from 'vitest';
++import type { RecipeSummary } from './recipes.ts';
++import { useApi } from './test/api.ts';
++
++const api = useApi();
++
++const list = async (query: string) => (await api.get<RecipeSummary[]>(`/api/recipes?${query}`)).body.map((recipe) => recipe.title);
++
++describe('the ingredient filter together with the other filters', () => {
++  it('alone, lists every recipe with the ingredient', async () => {
++    expect(await list('ingredient=egg')).toEqual(['Banana Pancakes', 'Chocolate Mug Cake', 'Egg Custard', 'Lemon Tart']);
++  });
++
++  it('keeps the category', async () => {
++    expect(await list('ingredient=egg&category=dessert')).toEqual(['Chocolate Mug Cake', 'Egg Custard', 'Lemon Tart']);
++    expect(await list('ingredient=egg&category=breakfast')).toEqual(['Banana Pancakes']);
++    expect(await list('ingredient=egg&category=drink')).toEqual([]);
++  });
++
++  it('keeps the search', async () => {
++    expect(await list('ingredient=garlic')).toEqual(['Garlic Butter Pasta', 'Hummus', 'Roast Chicken with Lemon', 'Vegetable Curry']);
++    expect(await list('ingredient=garlic&q=chicken')).toEqual(['Roast Chicken with Lemon']);
++  });
++
++  it('keeps the category and the search at once', async () => {
++    expect(await list('ingredient=lemon&category=main&q=sunday')).toEqual(['Roast Chicken with Lemon']);
++    expect(await list('ingredient=lemon&category=dessert&q=sunday')).toEqual([]);
++  });
++
++  it('answers an empty list for an ingredient no recipe has, whatever the category', async () => {
++    expect(await list('ingredient=saffron&category=main')).toEqual([]);
++  });
++});
+diff --git a/server/src/recipes.ts b/server/src/recipes.ts
+index f859d93..8819348 100644
+--- a/server/src/recipes.ts
++++ b/server/src/recipes.ts
+@@ -104,10 +104,12 @@ export async function listRecipes(filters: ListFilters = {}): Promise<RecipeSumm
+   if (filters.favorites) {
+     ids = (ids ?? [...favorites]).filter((id) => favorites.has(id));
+   }
++  if (ids) {
++    where.id = ids;
++  }
+ 
+   const recipes = await Recipe.findAll({
+-    // The ids were already picked from the recipes that match: nothing else to filter.
+-    where: ids ? { id: ids } : where,
++    where,
+     // A recipe without a photo is still a recipe: the join must not leave it out.
+     include: [{ model: Photo, as: 'photo', required: false }],
+     order: [

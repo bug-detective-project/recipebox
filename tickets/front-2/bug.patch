@@ -1,0 +1,13 @@
+diff --git a/client/src/components/RecipeForm.tsx b/client/src/components/RecipeForm.tsx
+index 4cdf2eb..19d6987 100644
+--- a/client/src/components/RecipeForm.tsx
++++ b/client/src/components/RecipeForm.tsx
+@@ -86,7 +86,7 @@ export function RecipeForm({ editing, save }: { editing?: RecipeDetail; save: (i
+     control,
+     name: 'ingredients',
+     // A rule of the whole list: its message is errors.ingredients.root.
+-    rules: { validate: (items) => items.length > 0 || 'Add at least one ingredient' },
++    rules: { minLength: { value: 1, message: 'Add at least one ingredient' } },
+   });
+   const steps = useFieldArray({ control, name: 'steps' });
+ 

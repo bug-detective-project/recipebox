@@ -1,0 +1,22 @@
+diff --git a/server/src/recipes.ts b/server/src/recipes.ts
+index 8819348..b0afb5d 100644
+--- a/server/src/recipes.ts
++++ b/server/src/recipes.ts
+@@ -161,6 +161,8 @@ function fieldsOf(input: RecipeInput) {
+     title: input.title.trim(),
+     description: (input.description ?? '').trim(),
+     category: input.category,
++    // What a cook writes is a draft until it is published.
++    status: 'draft' as Status,
+     servings: input.servings,
+     prepMinutes,
+   };
+@@ -203,6 +205,8 @@ export async function updateRecipe(sequelize: Sequelize, id: number, input: Reci
+   await sequelize.transaction(async (transaction) => {
+     await recipe.update(fields, { transaction });
+     await writeParts(recipe.id, input, transaction);
++    // Ratings are of published recipes only.
++    await Rating.destroy({ where: { recipeId: recipe.id }, transaction });
+   });
+   return getRecipe(recipe.id);
+ }

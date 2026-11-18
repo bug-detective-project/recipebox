@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Antes de escrever código, ache o que existe. Procure por `TODO` no servidor: há dois, um para cada item do ticket. Depois leia como o `listRecipes` em `server/src/recipes.ts` preenche o `favorite` de cada receita da lista: há um ajudante que responde os ids de todas as favoritas.",
+    "Para a receita: o `getRecipe` chama `summaryOf(recipe, rating, false)`. O terceiro argumento é a marca de favorita, e o `favoriteIds()` devolve um `Set` com os ids das favoritas, então o valor verdadeiro está a uma expressão de distância. Toda resposta com uma receita inteira passa pelo `getRecipe`, e assim a edição e a publicação ficam certas junto. Para o filtro: a rota em `server/src/routes/recipes.ts` responde 501 antes de chamar o `listRecipes`; o `listRecipes` já recebe `filters.favorites`.",
+    "No `listRecipes`, o filtro de ingrediente estreita o resultado com `ids`, a lista dos ids de receita permitidos, que depois entra no `where`. As favoritas podem usar o mesmo mecanismo: quando `filters.favorites` é verdadeiro, `ids = (ids ?? [...favorites]).filter((id) => favorites.has(id))`: as favoritas sozinhas, ou as receitas do ingrediente que também são favoritas. Depois tire o 501 da rota, para a requisição chegar ao `listRecipes`. Como os ids entram no mesmo `where` da categoria e da busca, todas as combinações funcionam."
+  ]
+}

@@ -1,0 +1,14 @@
+diff --git a/client/src/api/recipes.ts b/client/src/api/recipes.ts
+index 82d4270..ab595c8 100644
+--- a/client/src/api/recipes.ts
++++ b/client/src/api/recipes.ts
+@@ -44,7 +44,8 @@ export function useUpdateRecipe() {
+   const queryClient = useQueryClient();
+   return useMutation({
+     mutationFn: ({ id, input }: { id: number; input: RecipeInput }) => request<RecipeDetail>(`/api/recipes/${id}`, { method: 'PUT', body: input }),
+-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['recipes'] }),
++    // The page of the recipe is the copy that changed.
++    onSuccess: (recipe) => queryClient.invalidateQueries({ queryKey: ['recipes', 'detail', String(recipe.id)] }),
+   });
+ }
+ 

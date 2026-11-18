@@ -1,0 +1,120 @@
+{
+  "client": {
+    "name": "Saffron Lane Supper Club",
+    "about": "O Saffron Lane Supper Club é um grupo de vizinhos que cozinha junto toda quinta-feira na cozinha de um centro comunitário. O RecipeBox é o caderno de receitas deles: o que fizeram, quanto de cada coisa, e o que cada um achou. Eles leem o caderno no celular apoiado em um pote, com as mãos sujas de farinha.",
+    "contacts": "Bianca Moretti (organizadora do clube), Leo Tanaka (cozinheiro voluntário) e Ingrid Solberg (que mantém o site no ar) relatam os tickets.",
+    "reporters": [
+      {
+        "name": "Bianca Moretti",
+        "role": "Organizadora do clube"
+      },
+      {
+        "name": "Leo Tanaka",
+        "role": "Cozinheiro voluntário"
+      },
+      {
+        "name": "Ingrid Solberg",
+        "role": "Responsável pelo site"
+      }
+    ]
+  },
+  "project": {
+    "name": "RecipeBox",
+    "about": "Um caderno de receitas dividido por algumas pessoas: receitas com ingredientes e passos, quantidades que acompanham o número de porções, busca por texto e por ingrediente, avaliações e favoritas. Os dados ficam em um banco PostgreSQL.",
+    "stack": "React, Vite, TanStack Query, React Hook Form e Tailwind; Node.js, Fastify e Sequelize; PostgreSQL",
+    "skills": [
+      "Formulários e validação",
+      "Usar bibliotecas corretamente",
+      "Criação de rotas e navegação",
+      "Consumo de API",
+      "Responsividade",
+      "Acessibilidade",
+      "Validação de entrada",
+      "Desenho de API e HTTP",
+      "Banco de dados e consultas",
+      "Busca, filtros e paginação",
+      "Regras de negócio e camadas",
+      "Registros no código"
+    ]
+  },
+  "messages": {
+    "welcome": {
+      "subject": "Boas-vindas ao projeto RecipeBox!",
+      "body": "Oi, que bom ter você com a gente!\n\nEu sou a Rafaela, gerente de engenharia. Você vai entrar no **RecipeBox**, o caderno de receitas que construímos para o **Saffron Lane Supper Club**, um grupo de vizinhos que cozinha junto toda quinta-feira. Eles abrem o caderno na cozinha, no meio de uma receita, então quando algo está errado eles descobrem com a panela no fogo.\n\nComo a gente trabalha:\n\n- Seus tickets aparecem no **Quadro**. Um de cada vez: arraste para **Em andamento** quando começar e para **Em QA** quando achar que terminou. A maioria dos tickets são bugs para consertar; um pede que você construa algo que falta, e um que você termine algo que ficou pela metade.\n- O código fica no seu container de workspace. **Abrir no VS Code** conecta o seu editor a ele, com Node, terminal e depurador já configurados. Rode `npm run dev` no terminal do VS Code e use **Abrir app no navegador** para testar o caderno.\n- Este projeto tem um servidor de banco de dados de verdade: um **PostgreSQL** que roda ao lado do seu workspace. O Dashboard mostra se ele está pronto. Para olhar os dados, rode `psql \"$DATABASE_URL\"` no terminal do VS Code, e `npm run db:reset` devolve o caderno de exemplo sempre que você quiser recomeçar do zero.\n- O servidor é feito com Fastify e fala com o banco pelo Sequelize; o formulário da página usa React Hook Form. Se algum deles for novidade para você, leia antes o `README.md`: ele diz onde mora cada tipo de código.\n- O QA roda primeiro os testes do projeto e depois verifica o próprio ticket. Se algo falhar, o card volta com observações.\n- Travou? Mande uma mensagem para a **Priya** pelo ticket. Ela vai te indicar o caminho, uma dica de cada vez.\n\nQuando quiser começar, clique em **Pegar próxima tarefa**. Escolhi uma boa primeira tarefa para você.\n\nRafaela"
+    },
+    "assignments": {
+      "back-1": {
+        "subject": "Novo ticket: RB-201",
+        "body": "Uma receita salva com o tempo \"1h30\" não pode ser salva de novo pelo formulário de edição: a API recusa o mesmo texto que aceitou quando a receita foi criada.\n\nCompare as duas requisições lado a lado.\n\nRafaela"
+      },
+      "back-2": {
+        "subject": "Novo ticket: RB-202",
+        "body": "Apertar o + em uma receita para 4 dá 41 porções e dois quilos de farinha. A página só soma um ao que o servidor envia.\n\nSiga o número de trás para a frente, da página até onde ele fica guardado.\n\nRafaela"
+      },
+      "back-3": {
+        "subject": "Novo ticket: RB-203",
+        "body": "O script de limpeza da Ingrid apagou uma receita que não existe e ouviu que deu certo. A API responde sucesso para uma exclusão que não fez nada.\n\nUm ticket curto, e uma boa olhada em como a API responde.\n\nRafaela"
+      },
+      "back-4": {
+        "subject": "Novo ticket: RB-204",
+        "body": "A busca não encontra a receita mais feita do clube. A Bianca notou o padrão: só receitas com foto são encontradas.\n\nA busca é uma consulta no servidor. Leia o que o ORM faz com ela.\n\nRafaela"
+      },
+      "back-5": {
+        "subject": "Novo ticket: RB-205",
+        "body": "Escolher uma categoria e digitar um ingrediente traz receitas de todas as categorias. Cada filtro funciona sozinho; juntos, um deles ganha.\n\nOlhe o lugar onde os filtros se encontram.\n\nRafaela"
+      },
+      "back-6": {
+        "subject": "Novo ticket: RB-206",
+        "body": "Corrigir um erro de digitação em uma receita publicada faz ela voltar a rascunho e apaga as avaliações de vez. O pessoal parou de corrigir receitas.\n\nO ticket traz as regras do caderno. Confira contra elas o que uma edição grava.\n\nRafaela"
+      },
+      "back-7": {
+        "subject": "Novo ticket: RB-207",
+        "body": "Este não é um bug. Alguém trocou os passos de uma receita e ninguém sabe dizer quem: o registro do servidor não conta. A Ingrid quer uma linha por alteração, com o nome de quem alterou.\n\nO ticket diz exatamente o que a linha precisa ter, e o que não pode ter.\n\nRafaela"
+      },
+      "back-8": {
+        "subject": "Novo ticket: RB-208",
+        "body": "Este é um trabalho inacabado. As favoritas funcionam na lista; na página da receita o coração está sempre vazio, e o \"Only favorites\" falha. O lado do servidor ficou pela metade, com anotações no código.\n\nLeia o que existe antes de acrescentar.\n\nRafaela"
+      },
+      "front-1": {
+        "subject": "Novo ticket: RB-101",
+        "body": "O Leo tirou a manteiga de uma receita, salvou, e a manteiga voltou. A linha sai do formulário e reaparece na receita salva.\n\nComece olhando o que a página realmente envia quando o formulário é salvo.\n\nRafaela"
+      },
+      "front-2": {
+        "subject": "Novo ticket: RB-102",
+        "body": "O caderno tem receitas sem nenhum ingrediente. O formulário tem uma regra contra isso, com mensagem escrita e tudo, e a regra nunca dispara.\n\nO formulário é feito com React Hook Form. Leia o que a regra significa de verdade antes de mudar.\n\nRafaela"
+      },
+      "front-3": {
+        "subject": "Novo ticket: RB-103",
+        "body": "A Bianca busca no caderno, abre uma receita, volta, e a busca sumiu. Ela também não consegue mandar para ninguém o link de uma busca.\n\nPense em onde os filtros da lista deveriam morar.\n\nRafaela"
+      },
+      "front-4": {
+        "subject": "Novo ticket: RB-104",
+        "body": "Depois que uma receita é editada, a lista continua mostrando a antiga até a página ser recarregada. Duas pessoas salvaram a mesma mudança duas vezes por causa disso.\n\nO servidor está certo. Olhe o que a página guarda e quando ela solta.\n\nRafaela"
+      },
+      "front-5": {
+        "subject": "Novo ticket: RB-105",
+        "body": "Um link antigo para uma receita apagada abre uma receita vazia, com os botões Publish e Delete. Uma pessoa achou que tinha quebrado alguma coisa.\n\nO servidor responde 404 direitinho. Descubra por que a página não percebe.\n\nRafaela"
+      },
+      "front-6": {
+        "subject": "Novo ticket: RB-106",
+        "body": "O clube cozinha com o celular apoiado na bancada, e no celular os passos de toda receita ficam cortados à direita. Estão chutando a temperatura do forno.\n\nÉ uma mudança pequena depois que você enxerga. Use a barra de dispositivos das ferramentas de desenvolvedor.\n\nRafaela"
+      },
+      "front-7": {
+        "subject": "Novo ticket: RB-107",
+        "body": "Uma sócia que usa só o teclado não consegue avaliar receitas: as estrelas nunca recebem o foco, e o leitor de tela dela nem as menciona.\n\nEste é importante para a Bianca. Experimente antes a página você mesmo, sem o mouse.\n\nRafaela"
+      },
+      "front-8": {
+        "subject": "Novo ticket: RB-108",
+        "body": "Quando alguém muda o número de porções, a lista inteira de ingredientes vira o primeiro ingrediente, repetido. Com as porções da própria receita parece tudo certo.\n\nLeia o componente com calma. Ele é curto.\n\nRafaela"
+      }
+    },
+    "completion": {
+      "subject": "RecipeBox: projeto concluído!",
+      "body": "Você concluiu toda a trilha de {{track}} do RecipeBox, então este projeto está feito do seu lado. A Bianca disse que a última quinta foi a primeira noite do clube sem ninguém gritando uma pergunta sobre o caderno do outro lado da cozinha, e o Leo e a Ingrid também mandam agradecimentos.\n\nVocê pode continuar com as outras trilhas do RecipeBox quando quiser. Novos projetos também estão a caminho.\n\nObrigada pelo esforço.\n\nRafaela"
+    },
+    "trackCompletion": {
+      "subject": "A trilha de {{track}} está concluída!",
+      "body": "Você fechou todos os tickets de {{track}} do RecipeBox. A Bianca percebeu: o pessoal voltou a corrigir e a avaliar receitas.\n\nObrigada pelo esforço.\n\nRafaela"
+    }
+  }
+}

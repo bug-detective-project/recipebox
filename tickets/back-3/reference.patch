@@ -1,0 +1,53 @@
+diff --git a/server/src/delete-missing.test.ts b/server/src/delete-missing.test.ts
+new file mode 100644
+index 0000000..c5babc7
+--- /dev/null
++++ b/server/src/delete-missing.test.ts
+@@ -0,0 +1,31 @@
++import { describe, expect, it } from 'vitest';
++import { useApi } from './test/api.ts';
++
++const api = useApi();
++
++const NOT_FOUND = { status: 404, body: { error: 'Recipe not found' } };
++
++describe('DELETE /api/recipes/:id for a recipe that is not there', () => {
++  it('answers 404 for an id that never existed', async () => {
++    expect(await api.delete('/api/recipes/999')).toEqual(NOT_FOUND);
++  });
++
++  it('answers 404 the second time the same recipe is deleted', async () => {
++    expect((await api.delete('/api/recipes/9')).status).toBe(204);
++
++    expect(await api.delete('/api/recipes/9')).toEqual(NOT_FOUND);
++  });
++
++  it.each(['abc', '1.5', '0'])('answers 404 for the id %s', async (id) => {
++    expect(await api.delete(`/api/recipes/${id}`)).toEqual(NOT_FOUND);
++  });
++
++  it('still removes a recipe that exists, and only that one', async () => {
++    const before = (await api.get<unknown[]>('/api/recipes')).body.length;
++
++    expect((await api.delete('/api/recipes/3')).status).toBe(204);
++
++    expect((await api.get('/api/recipes/3')).status).toBe(404);
++    expect((await api.get<unknown[]>('/api/recipes')).body).toHaveLength(before - 1);
++  });
++});
+diff --git a/server/src/recipes.ts b/server/src/recipes.ts
+index 69f45ed..8819348 100644
+--- a/server/src/recipes.ts
++++ b/server/src/recipes.ts
+@@ -208,8 +208,9 @@ export async function updateRecipe(sequelize: Sequelize, id: number, input: Reci
+ }
+ 
+ export async function deleteRecipe(id: number): Promise<void> {
+-  if (Number.isInteger(id)) {
+-    await Recipe.destroy({ where: { id } });
++  const deleted = Number.isInteger(id) ? await Recipe.destroy({ where: { id } }) : 0;
++  if (deleted === 0) {
++    throw new NotFoundError('Recipe not found');
+   }
+ }
+ 

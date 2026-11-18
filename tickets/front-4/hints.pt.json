@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "O servidor tem a receita nova, e recarregar mostra. Então a lista na tela não está perguntando de novo ao servidor: ela mostra uma cópia que já tinha. Descubra onde o cliente guarda cópias do que a API respondeu, e o que faz ele jogar uma cópia fora.",
+    "O cliente usa TanStack Query (`client/src/api/recipes.ts`, `client/src/queryClient.ts`). Cada lista e cada receita fica em cache com uma chave, como `['recipes', 'list', filters]` e `['recipes', 'detail', id]`, e é reaproveitada por um minuto. Cada mutação diz, no `onSuccess`, quais chaves ficaram desatualizadas. Compare o que `useCreateRecipe`, `useDeleteRecipe` e `useUpdateRecipe` invalidam.",
+    "O `useUpdateRecipe` invalida só `['recipes', 'detail', id]`, a página da receita. As listas continuam \"frescas\" no cache com o título antigo. Invalide tudo que começa com `['recipes']`, como as outras mutações fazem: `onSuccess: () => queryClient.invalidateQueries({ queryKey: ['recipes'] })`. A chave casa pelo começo, então isso cobre todas as listas, com quaisquer filtros, e a página da receita."
+  ]
+}

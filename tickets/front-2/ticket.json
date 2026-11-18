@@ -1,0 +1,13 @@
+{
+  "type": "fix",
+  "skills": {
+    "en": [
+      "Forms and validation",
+      "Using libraries correctly"
+    ],
+    "pt": [
+      "Formulários e validação",
+      "Usar bibliotecas corretamente"
+    ]
+  }
+}

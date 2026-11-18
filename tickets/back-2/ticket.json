@@ -1,0 +1,13 @@
+{
+  "type": "fix",
+  "skills": {
+    "en": [
+      "Input validation",
+      "Tracing data flow"
+    ],
+    "pt": [
+      "Validação de entrada",
+      "Rastrear o fluxo de dados"
+    ]
+  }
+}

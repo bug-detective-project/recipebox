@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The server has the new recipe, and a reload shows it. So the list on screen is not asking the server again: it is showing a copy it already had. Find out where the client keeps copies of what the API answered, and what makes it throw a copy away.",
+    "The client uses TanStack Query (`client/src/api/recipes.ts`, `client/src/queryClient.ts`). Each list and each recipe is cached under a key, such as `['recipes', 'list', filters]` and `['recipes', 'detail', id]`, and is reused for a minute. Each mutation says, in `onSuccess`, which keys are out of date. Compare what `useCreateRecipe`, `useDeleteRecipe` and `useUpdateRecipe` invalidate.",
+    "`useUpdateRecipe` invalidates only `['recipes', 'detail', id]`, the page of the recipe. The lists stay \"fresh\" in the cache with the old title. Invalidate everything that starts with `['recipes']`, like the other mutations do: `onSuccess: () => queryClient.invalidateQueries({ queryKey: ['recipes'] })`. A key is matched by its beginning, so that covers every list, whatever its filters, and the recipe page."
+  ]
+}

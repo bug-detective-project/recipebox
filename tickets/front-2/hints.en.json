@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "The message exists and the rule exists, and the rule never complains about an empty list. Before changing anything, find where the rule of the ingredient list is declared in `client/src/components/RecipeForm.tsx` and read what the documentation of React Hook Form says about that kind of rule.",
+    "The rule is in the `useFieldArray` of the ingredients: `rules: { minLength: { value: 1, message: … } }`. In React Hook Form, `minLength` and `maxLength` are only checked when the field has a value: an empty value is the business of `required`. An empty array counts as empty, so `minLength: 1` is never even looked at when the last row is removed.",
+    "Replace the rule with one that runs for an empty list: `rules: { validate: (items) => items.length > 0 || 'Add at least one ingredient' }`. The message of a rule of the whole list arrives in `errors.ingredients.root`, which the form already shows. `handleSubmit` does not call `save` while a rule fails, so nothing is sent."
+  ]
+}

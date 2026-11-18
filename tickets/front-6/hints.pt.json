@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "O texto está cortado, e nada deixa rolar até o resto. São duas coisas ao mesmo tempo: algo é mais largo que a tela, e algo esconde o que sobra para fora. Inspecione um passo nas ferramentas de desenvolvedor com a janela estreita e olhe a largura do texto e a lista em volta dele.",
+    "Os passos são desenhados por `client/src/components/StepList.tsx`. O parágrafo de um passo tem `w-[38rem]` e `shrink-0`: uma largura fixa de 608px que não pode encolher. A lista tem `overflow-x-hidden`, que corta o que não cabe. No notebook 608px cabem; em um celular de 375px, não.",
+    "Deixe o texto ocupar o espaço que sobra, em vez de uma largura fixa: no parágrafo, troque `w-[38rem] shrink-0` por `min-w-0 flex-1` (em uma linha flex, é o `min-w-0` que permite a um item ficar mais estreito que o seu conteúdo) e acrescente `break-words` para palavras muito longas. Tire o `overflow-x-hidden` da lista: quando o texto quebra não há nada a esconder, e foi o esconder que deixou o problema ilegível em vez de só feio."
+  ]
+}

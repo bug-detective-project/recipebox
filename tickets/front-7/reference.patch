@@ -1,0 +1,109 @@
+diff --git a/client/src/components/RatingStars.keyboard.test.tsx b/client/src/components/RatingStars.keyboard.test.tsx
+new file mode 100644
+index 0000000..b705c0f
+--- /dev/null
++++ b/client/src/components/RatingStars.keyboard.test.tsx
+@@ -0,0 +1,61 @@
++import { render, screen } from '@testing-library/react';
++import userEvent from '@testing-library/user-event';
++import { describe, expect, it, vi } from 'vitest';
++import { RatingStars } from './RatingStars.tsx';
++
++const NAMES = ['1 star', '2 stars', '3 stars', '4 stars', '5 stars'];
++
++/** The control of a star: a button, or a radio button of a group of five. */
++function star(name: string): HTMLElement {
++  return screen.queryByRole('radio', { name }) ?? screen.getByRole('button', { name });
++}
++
++describe('the rating stars with the keyboard', () => {
++  it('has a control with a name for each star', () => {
++    render(<RatingStars onRate={() => {}} />);
++
++    expect(NAMES.map((name) => star(name).tagName)).toHaveLength(5);
++  });
++
++  it('is reached with Tab', async () => {
++    render(<RatingStars onRate={() => {}} />);
++
++    await userEvent.tab();
++
++    expect(NAMES.map(star)).toContain(document.activeElement);
++  });
++
++  it.each([
++    ['2 stars', 2],
++    ['5 stars', 5],
++  ])('gives %s with Space on that star', async (name, stars) => {
++    const onRate = vi.fn();
++    render(<RatingStars onRate={onRate} />);
++
++    star(name).focus();
++    expect(document.activeElement).toBe(star(name));
++    await userEvent.keyboard(' ');
++
++    expect(onRate).toHaveBeenCalledTimes(1);
++    expect(onRate).toHaveBeenCalledWith(stars);
++  });
++
++  it('still gives the stars of a click', async () => {
++    const onRate = vi.fn();
++    render(<RatingStars onRate={onRate} />);
++
++    await userEvent.click(star('4 stars'));
++
++    expect(onRate).toHaveBeenCalledWith(4);
++  });
++
++  it('gives nothing while it is disabled', async () => {
++    const onRate = vi.fn();
++    render(<RatingStars disabled onRate={onRate} />);
++
++    expect(star('3 stars')).toBeDisabled();
++    await userEvent.click(star('3 stars'));
++
++    expect(onRate).not.toHaveBeenCalled();
++  });
++});
+diff --git a/client/src/components/RatingStars.tsx b/client/src/components/RatingStars.tsx
+index a1b823d..0513216 100644
+--- a/client/src/components/RatingStars.tsx
++++ b/client/src/components/RatingStars.tsx
+@@ -4,17 +4,31 @@ const STARS = [1, 2, 3, 4, 5];
+ 
+ const nameOf = (stars: number) => (stars === 1 ? '1 star' : `${stars} stars`);
+ 
+-/** The five stars a cook rates a recipe with: a click on a star gives that many stars. */
++/**
++ * The five stars a cook rates a recipe with. Each star is a button, so it is reached with Tab and
++ * pressed with Enter or Space like any other, and a screen reader says how many stars it gives.
++ */
+ export function RatingStars({ disabled, onRate }: { disabled?: boolean; onRate: (stars: number) => void }) {
+-  // The stars up to the one under the pointer are shown filled.
++  // The stars up to the one under the pointer or with the focus are shown filled.
+   const [preview, setPreview] = useState(0);
+ 
+   return (
+-    <div aria-label="Rate this recipe" className={`flex gap-1 ${disabled ? 'opacity-50' : ''}`} onMouseLeave={() => setPreview(0)}>
++    <div role="group" aria-label="Rate this recipe" className="flex gap-1" onMouseLeave={() => setPreview(0)}>
+       {STARS.map((stars) => (
+-        <span key={stars} className="cursor-pointer px-1 text-2xl text-accent" title={nameOf(stars)} onMouseEnter={() => setPreview(stars)} onClick={() => !disabled && onRate(stars)}>
+-          {stars <= preview ? '★' : '☆'}
+-        </span>
++        <button
++          key={stars}
++          type="button"
++          className="rounded px-1 text-2xl text-accent disabled:opacity-50"
++          title={nameOf(stars)}
++          aria-label={nameOf(stars)}
++          disabled={disabled}
++          onMouseEnter={() => setPreview(stars)}
++          onFocus={() => setPreview(stars)}
++          onBlur={() => setPreview(0)}
++          onClick={() => onRate(stars)}
++        >
++          <span aria-hidden="true">{stars <= preview ? '★' : '☆'}</span>
++        </button>
+       ))}
+     </div>
+   );

@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Cada filtro funciona sozinho, e um deles cancela os outros. Então olhe como os filtros são juntados em uma consulta só, e não um filtro isolado. Isso acontece no `listRecipes`, em `server/src/recipes.ts`.",
+    "O `listRecipes` monta um objeto `where`: entra a categoria, depois a busca. O ingrediente é diferente: as receitas que têm o ingrediente são achadas antes, na tabela `ingredients`, e os ids delas ficam em `ids`. Agora leia o `where` que é entregue, no fim, ao `Recipe.findAll`.",
+    "A consulta usa `where: ids ? { id: ids } : where`: quando há ids, um objeto novinho, só com os ids, toma o lugar do `where` que tinha a categoria e a busca. Os ids são uma condição a mais, e não uma substituição: acrescente-os ao mesmo objeto (`if (ids) { where.id = ids; }`) e passe `where` ao `findAll`. As condições de um mesmo objeto `where` são ligadas por E."
+  ]
+}

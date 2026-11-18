@@ -1,0 +1,187 @@
+diff --git a/server/src/change-log.test.ts b/server/src/change-log.test.ts
+new file mode 100644
+index 0000000..c6c4507
+--- /dev/null
++++ b/server/src/change-log.test.ts
+@@ -0,0 +1,93 @@
++import { describe, expect, it } from 'vitest';
++import type { RecipeDetail } from './recipes.ts';
++import { recipeInput, useApi } from './test/api.ts';
++
++const api = useApi();
++
++const DRAFT = 11;
++const AS_LEO = { 'x-cook': 'Leo' };
++
++/** The lines the server logged about changes to recipes. */
++const changes = () => api.log.filter((line) => line.event === 'recipe.changed');
++
++describe('the log line of a change to a recipe', () => {
++  it('says who created a recipe', async () => {
++    const { body } = await api.post<RecipeDetail>('/api/recipes', recipeInput(), AS_LEO);
++
++    expect(changes()).toHaveLength(1);
++    expect(changes()[0]).toMatchObject({ event: 'recipe.changed', action: 'created', recipeId: body.id, cook: 'Leo' });
++  });
++
++  it('says who edited, published and deleted a recipe', async () => {
++    await api.put(`/api/recipes/${DRAFT}`, recipeInput(), { 'x-cook': 'Marta' });
++    await api.post(`/api/recipes/${DRAFT}/publish`, undefined, { 'x-cook': 'Bianca' });
++    await api.delete(`/api/recipes/${DRAFT}`, AS_LEO);
++
++    expect(changes().map(({ action, recipeId, cook }) => ({ action, recipeId, cook }))).toEqual([
++      { action: 'updated', recipeId: DRAFT, cook: 'Marta' },
++      { action: 'published', recipeId: DRAFT, cook: 'Bianca' },
++      { action: 'deleted', recipeId: DRAFT, cook: 'Leo' },
++    ]);
++  });
++
++  it('is an info line of the request, with the id of the request', async () => {
++    await api.put(`/api/recipes/${DRAFT}`, recipeInput(), AS_LEO);
++
++    const [line] = changes();
++    const request = api.log.find((other) => other.msg === 'incoming request' && other.reqId === line!.reqId);
++    expect(line!.level).toBe(30);
++    expect(line!.reqId).toBeTruthy();
++    expect(request).toBeTruthy();
++  });
++
++  it('says "unknown" when the request does not say who the cook is', async () => {
++    await api.put(`/api/recipes/${DRAFT}`, recipeInput());
++
++    expect(changes()[0]).toMatchObject({ action: 'updated', cook: 'unknown' });
++  });
++
++  it.each(['', '   ', 'x'.repeat(41), '<script>', 'a;b', 'Leo_Smith'])('says "unknown" for the name %j', async (name) => {
++    await api.put(`/api/recipes/${DRAFT}`, recipeInput(), { 'x-cook': name });
++
++    expect(changes()[0]).toMatchObject({ cook: 'unknown' });
++  });
++
++  it.each(['Ana Maria', 'D\'Angelo', 'J. P. Souza-Lima', 'Cook 2', 'x'.repeat(40)])('accepts the name %j', async (name) => {
++    await api.put(`/api/recipes/${DRAFT}`, recipeInput(), { 'x-cook': name });
++
++    expect(changes()[0]).toMatchObject({ cook: name });
++  });
++
++  it('leaves the spaces around a name out', async () => {
++    await api.put(`/api/recipes/${DRAFT}`, recipeInput(), { 'x-cook': '  Leo ' });
++
++    expect(changes()[0]).toMatchObject({ cook: 'Leo' });
++  });
++
++  it('writes nothing for a change that did not happen', async () => {
++    await api.put('/api/recipes/999', recipeInput(), AS_LEO);
++    await api.put(`/api/recipes/${DRAFT}`, recipeInput({ title: '' }), AS_LEO);
++    await api.post('/api/recipes/999/publish', undefined, AS_LEO);
++    await api.post('/api/recipes', recipeInput({ prepTime: 'soon' }), AS_LEO);
++
++    expect(changes()).toEqual([]);
++  });
++
++  it('writes nothing for what does not change a recipe', async () => {
++    await api.get('/api/recipes');
++    await api.get('/api/recipes/1');
++    await api.post('/api/recipes/1/ratings', { stars: 5 }, AS_LEO);
++    await api.put('/api/favorites/1', undefined, AS_LEO);
++
++    expect(changes()).toEqual([]);
++  });
++
++  it('never carries what the cook typed', async () => {
++    await api.post('/api/recipes', recipeInput({ title: 'Secret Family Sauce', description: 'Do not share.' }), AS_LEO);
++
++    const line = JSON.stringify(changes()[0]);
++    expect(line).not.toContain('Secret Family Sauce');
++    expect(line).not.toContain('Do not share');
++    expect(Object.keys(changes()[0]!).sort()).toEqual(['action', 'cook', 'event', 'hostname', 'level', 'msg', 'pid', 'recipeId', 'reqId', 'time']);
++  });
++});
+diff --git a/server/src/cook.ts b/server/src/cook.ts
+new file mode 100644
+index 0000000..734336c
+--- /dev/null
++++ b/server/src/cook.ts
+@@ -0,0 +1,16 @@
++import type { FastifyRequest } from 'fastify';
++
++/** A name the cookbook accepts for a cook: letters, digits, spaces, dots, apostrophes and dashes; 1 to 40. */
++const COOK_NAME = /^[A-Za-z0-9 .'-]{1,40}$/;
++
++export const UNKNOWN_COOK = 'unknown';
++
++/**
++ * Who is using the cookbook. There is no login: the client sends the name the cook picked in the
++ * header X-Cook. A request without it, or with something that is not a name, is from "unknown".
++ */
++export function cookOf(request: FastifyRequest): string {
++  const header = request.headers['x-cook'];
++  const name = typeof header === 'string' ? header.trim() : '';
++  return COOK_NAME.test(name) ? name : UNKNOWN_COOK;
++}
+diff --git a/server/src/routes/recipes.ts b/server/src/routes/recipes.ts
+index c37098a..dd62b14 100644
+--- a/server/src/routes/recipes.ts
++++ b/server/src/routes/recipes.ts
+@@ -1,5 +1,6 @@
+-import type { FastifyInstance } from 'fastify';
++import type { FastifyInstance, FastifyRequest } from 'fastify';
+ import type { Sequelize } from 'sequelize';
++import { cookOf } from '../cook.ts';
+ import { createRecipe, deleteRecipe, getRecipe, listRecipes, publishRecipe, rateRecipe, updateRecipe } from '../recipes.ts';
+ import type { ListFilters, RecipeInput } from '../recipes.ts';
+ import { listQuery, ratingBody, recipeBody } from '../schemas.ts';
+@@ -8,6 +9,16 @@ interface Id {
+   id: string;
+ }
+ 
++type Action = 'created' | 'updated' | 'published' | 'deleted';
++
++/**
++ * One line in the log per change to a recipe: what was done, to which recipe and by which cook.
++ * What the cook typed never goes to the log.
++ */
++function logChange(request: FastifyRequest, action: Action, recipeId: number): void {
++  request.log.info({ event: 'recipe.changed', action, recipeId, cook: cookOf(request) }, `recipe ${action}`);
++}
++
+ export function recipeRoutes(app: FastifyInstance, sequelize: Sequelize): void {
+   app.get<{ Querystring: ListFilters }>('/api/recipes', { schema: { querystring: listQuery } }, (request) => {
+     return listRecipes(request.query);
+@@ -15,6 +26,7 @@ export function recipeRoutes(app: FastifyInstance, sequelize: Sequelize): void {
+ 
+   app.post<{ Body: RecipeInput }>('/api/recipes', { schema: { body: recipeBody } }, async (request, reply) => {
+     const recipe = await createRecipe(sequelize, request.body);
++    logChange(request, 'created', recipe.id);
+     return reply.status(201).send(recipe);
+   });
+ 
+@@ -22,17 +34,23 @@ export function recipeRoutes(app: FastifyInstance, sequelize: Sequelize): void {
+     return getRecipe(Number(request.params.id));
+   });
+ 
+-  app.put<{ Params: Id; Body: RecipeInput }>('/api/recipes/:id', { schema: { body: recipeBody } }, (request) => {
+-    return updateRecipe(sequelize, Number(request.params.id), request.body);
++  app.put<{ Params: Id; Body: RecipeInput }>('/api/recipes/:id', { schema: { body: recipeBody } }, async (request) => {
++    const recipe = await updateRecipe(sequelize, Number(request.params.id), request.body);
++    logChange(request, 'updated', recipe.id);
++    return recipe;
+   });
+ 
+   app.delete<{ Params: Id }>('/api/recipes/:id', async (request, reply) => {
+-    await deleteRecipe(Number(request.params.id));
++    const id = Number(request.params.id);
++    await deleteRecipe(id);
++    logChange(request, 'deleted', id);
+     return reply.status(204).send();
+   });
+ 
+-  app.post<{ Params: Id }>('/api/recipes/:id/publish', (request) => {
+-    return publishRecipe(Number(request.params.id));
++  app.post<{ Params: Id }>('/api/recipes/:id/publish', async (request) => {
++    const recipe = await publishRecipe(Number(request.params.id));
++    logChange(request, 'published', recipe.id);
++    return recipe;
+   });
+ 
+   app.post<{ Params: Id; Body: { stars: number } }>('/api/recipes/:id/ratings', { schema: { body: ratingBody } }, async (request, reply) => {

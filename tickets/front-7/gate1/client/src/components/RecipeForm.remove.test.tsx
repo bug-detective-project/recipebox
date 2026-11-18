@@ -1,0 +1,67 @@
+import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it } from 'vitest';
+import type { RecipeInput } from '../api/types.ts';
+import { mockApi } from '../test/mockApi.ts';
+import { renderApp } from '../test/renderApp.tsx';
+
+// Recipe 1 of the test data has three ingredients: flour, egg and milk.
+async function openEditForm() {
+  const api = mockApi();
+  renderApp('/recipes/1/edit');
+  await screen.findByRole('textbox', { name: 'Title' });
+  return api;
+}
+
+async function saveAndReadIngredients(requests: { method: string; body: unknown }[]): Promise<string[]> {
+  await userEvent.click(screen.getByRole('button', { name: 'Save recipe' }));
+  await waitFor(() => expect(requests.some((request) => request.method === 'PUT')).toBe(true));
+  return (requests.find((request) => request.method === 'PUT')!.body as RecipeInput).ingredients.map((ingredient) => ingredient.name);
+}
+
+describe('removing an ingredient in the edit form', () => {
+  it('saves the recipe without the last ingredient', async () => {
+    const { requests } = await openEditForm();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Remove ingredient 3' }));
+
+    expect(await saveAndReadIngredients(requests)).toEqual(['flour', 'egg']);
+  });
+
+  it('saves the recipe without an ingredient of the middle', async () => {
+    const { requests } = await openEditForm();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Remove ingredient 2' }));
+
+    expect(await saveAndReadIngredients(requests)).toEqual(['flour', 'milk']);
+  });
+
+  it('saves the recipe with only the ingredient that was left', async () => {
+    const { requests } = await openEditForm();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Remove ingredient 1' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Remove ingredient 1' }));
+
+    expect(await saveAndReadIngredients(requests)).toEqual(['milk']);
+  });
+
+  it('saves a removed ingredient and a new one in its place', async () => {
+    const { requests } = await openEditForm();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Remove ingredient 1' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Add ingredient' }));
+    await userEvent.type(screen.getByRole('textbox', { name: 'Name of ingredient 3' }), 'sugar');
+
+    expect(await saveAndReadIngredients(requests)).toEqual(['egg', 'milk', 'sugar']);
+  });
+
+  it('shows the recipe without the ingredient after the save', async () => {
+    await openEditForm();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Remove ingredient 3' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save recipe' }));
+
+    await screen.findByRole('heading', { name: 'Banana Pancakes', level: 1 });
+    expect(screen.getAllByTestId('ingredient').map((item) => item.textContent)).toEqual(['200 g flour', '2 egg']);
+  });
+});

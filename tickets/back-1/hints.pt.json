@@ -1,0 +1,7 @@
+{
+  "hints": [
+    "Duas requisições recebem o mesmo corpo e discordam sobre um campo. Cada rota diz como o corpo dela é conferido. Abra `server/src/routes/recipes.ts` e compare o `schema` do `POST /api/recipes` com o do `PUT /api/recipes/:id`.",
+    "O `POST` usa `recipeBody` e o `PUT` usa `recipeUpdateBody`, os dois em `server/src/schemas.ts`. O `recipeUpdateBody` copia o `recipeBody` e troca o `prepTime` por um `pattern`: `^\\d+ ?(min)?$`, dígitos com um \"min\" opcional. O Fastify recusa a requisição antes de a rota rodar, e por isso a mensagem é o próprio padrão. Agora veja quem decide o que é um tempo na criação: o `parsePrepTime` em `server/src/duration.ts`.",
+    "Deve existir um lugar só que conhece os formatos, e ele existe: o `parsePrepTime`, que tanto o `createRecipe` quanto o `updateRecipe` já chamam pelo `fieldsOf`. A segunda regra, no esquema da edição, é mais antiga e mais estreita. Faça o `PUT` usar `recipeBody` e apague o `recipeUpdateBody` e o `MINUTES_PATTERN`. Não \"conserte\" o padrão para aceitar horas: duas descrições do mesmo formato foram a causa disto."
+  ]
+}

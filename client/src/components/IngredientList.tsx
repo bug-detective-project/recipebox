@@ -1,0 +1,20 @@
+import type { Ingredient } from '../api/types.ts';
+import { describeIngredient, scaleIngredients } from '../utils/scale.ts';
+
+/** The ingredients of a recipe, with the quantities for the servings the cook wants. */
+export function IngredientList({ ingredients, recipeServings, servings }: { ingredients: Ingredient[]; recipeServings: number; servings: number }) {
+  const scaled = scaleIngredients(ingredients, recipeServings, servings);
+
+  if (ingredients.length === 0) {
+    return <p className="text-muted">No ingredients yet.</p>;
+  }
+  return (
+    <ul className="flex flex-col divide-y divide-border">
+      {scaled.map((ingredient) => (
+        <li key={ingredient.id} className="flex items-baseline gap-3 py-2.5 before:size-1.5 before:shrink-0 before:-translate-y-0.5 before:rounded-full before:bg-accent" data-testid="ingredient">
+          {describeIngredient(ingredient)}
+        </li>
+      ))}
+    </ul>
+  );
+}

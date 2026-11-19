@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import type { FieldPath } from 'react-hook-form';
 import { Link } from 'react-router';
 import { ApiError } from '../api/http.ts';
 import { CATEGORIES, CATEGORY_LABELS } from '../api/types.ts';
 import type { Category, RecipeDetail, RecipeInput } from '../api/types.ts';
 import { formatPrepTime } from '../utils/prepTime.ts';
+import { DurationPicker } from './DurationPicker.tsx';
 import { Icon } from './Icon.tsx';
 
 /** What the form holds: every field as the cook sees it. */
@@ -14,7 +15,8 @@ export interface RecipeFormValues {
   description: string;
   category: Category;
   servings: number;
-  prepTime: string;
+  /** Picked as hours and minutes; the API gets it as text ("45 min", "1h30"). */
+  prepMinutes: number;
   photoUrl: string;
   photoCaption: string;
   ingredients: { name: string; quantity: number; unit: string }[];
@@ -26,7 +28,7 @@ const NEW_RECIPE: RecipeFormValues = {
   description: '',
   category: 'main',
   servings: 4,
-  prepTime: '',
+  prepMinutes: 0,
   photoUrl: '',
   photoCaption: '',
   ingredients: [{ name: '', quantity: 1, unit: '' }],
@@ -38,7 +40,7 @@ const valuesOf = (recipe: RecipeDetail): RecipeFormValues => ({
   description: recipe.description,
   category: recipe.category,
   servings: recipe.servings,
-  prepTime: formatPrepTime(recipe.prepMinutes),
+  prepMinutes: recipe.prepMinutes,
   photoUrl: recipe.photo?.url ?? '',
   photoCaption: recipe.photo?.caption ?? '',
   ingredients: recipe.ingredients.map(({ name, quantity, unit }) => ({ name, quantity, unit })),
@@ -52,7 +54,7 @@ function inputOf(values: RecipeFormValues): RecipeInput {
     description: values.description,
     category: values.category,
     servings: values.servings,
-    prepTime: values.prepTime,
+    prepTime: formatPrepTime(values.prepMinutes),
     photo: values.photoUrl.trim() === '' ? null : { url: values.photoUrl.trim(), caption: values.photoCaption },
     ingredients: values.ingredients,
     steps: values.steps.map((step) => step.text),
@@ -63,6 +65,9 @@ function inputOf(values: RecipeFormValues): RecipeInput {
 function formField(apiField: string): FieldPath<RecipeFormValues> | 'root' {
   if (apiField.startsWith('photo')) {
     return apiField.endsWith('caption') ? 'photoCaption' : 'photoUrl';
+  }
+  if (apiField === 'prepTime') {
+    return 'prepMinutes';
   }
   if (/^steps\.\d+$/.test(apiField)) {
     return `${apiField}.text` as FieldPath<RecipeFormValues>;
@@ -149,7 +154,7 @@ export function RecipeForm({ editing, save }: { editing?: RecipeDetail; save: (i
               ))}
             </select>
           </label>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.8fr)] gap-4">
             <label className={label}>
               Servings
               <input
@@ -162,11 +167,22 @@ export function RecipeForm({ editing, save }: { editing?: RecipeDetail; save: (i
               />
               {errors.servings && <span className={fieldError}>{errors.servings.message}</span>}
             </label>
-            <label className={label}>
-              Preparation time
-              <input className={input} placeholder="45 min or 1h30" {...register('prepTime', { required: 'How long does it take?' })} />
-              {errors.prepTime && <span className={fieldError}>{errors.prepTime.message}</span>}
-            </label>
+            <div role="group" aria-labelledby="prep-time-label" className={label}>
+              <span id="prep-time-label">Preparation time</span>
+              <Controller
+                control={control}
+                name="prepMinutes"
+                rules={{ validate: (minutes) => minutes > 0 || 'How long does it take?' }}
+                render={({ field }) => (
+                  <DurationPicker value={field.value} onChange={field.onChange} invalid={errors.prepMinutes !== undefined} describedBy={errors.prepMinutes ? 'error-prep-time' : undefined} />
+                )}
+              />
+              {errors.prepMinutes && (
+                <span id="error-prep-time" className={fieldError}>
+                  {errors.prepMinutes.message}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </Section>

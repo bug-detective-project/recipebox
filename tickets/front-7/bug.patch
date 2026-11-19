@@ -1,8 +1,8 @@
 diff --git a/client/src/components/RatingStars.tsx b/client/src/components/RatingStars.tsx
-index 0513216..a1b823d 100644
+index 63da873..d1b0762 100644
 --- a/client/src/components/RatingStars.tsx
 +++ b/client/src/components/RatingStars.tsx
-@@ -4,31 +4,17 @@ const STARS = [1, 2, 3, 4, 5];
+@@ -4,31 +4,23 @@ const STARS = [1, 2, 3, 4, 5];
  
  const nameOf = (stars: number) => (stars === 1 ? '1 star' : `${stars} stars`);
  
@@ -17,24 +17,26 @@ index 0513216..a1b823d 100644
    const [preview, setPreview] = useState(0);
  
    return (
--    <div role="group" aria-label="Rate this recipe" className="flex gap-1" onMouseLeave={() => setPreview(0)}>
-+    <div aria-label="Rate this recipe" className={`flex gap-1 ${disabled ? 'opacity-50' : ''}`} onMouseLeave={() => setPreview(0)}>
+-    <div role="group" aria-label="Rate this recipe" className="flex gap-1.5" onMouseLeave={() => setPreview(0)}>
++    <div aria-label="Rate this recipe" className={`flex gap-1.5 ${disabled ? 'opacity-50' : ''}`} onMouseLeave={() => setPreview(0)}>
        {STARS.map((stars) => (
 -        <button
--          key={stars}
++        <span
+           key={stars}
 -          type="button"
--          className="rounded px-1 text-2xl text-accent disabled:opacity-50"
--          title={nameOf(stars)}
+-          className="flex size-11 items-center justify-center rounded-full border border-border bg-surface-raised text-2xl leading-none text-accent shadow-sm transition-transform hover:scale-110 disabled:opacity-50"
++          className="flex size-11 cursor-pointer items-center justify-center rounded-full border border-border bg-surface-raised text-2xl leading-none text-accent shadow-sm transition-transform hover:scale-110"
+           title={nameOf(stars)}
 -          aria-label={nameOf(stars)}
 -          disabled={disabled}
--          onMouseEnter={() => setPreview(stars)}
+           onMouseEnter={() => setPreview(stars)}
 -          onFocus={() => setPreview(stars)}
 -          onBlur={() => setPreview(0)}
 -          onClick={() => onRate(stars)}
--        >
++          onClick={() => !disabled && onRate(stars)}
+         >
 -          <span aria-hidden="true">{stars <= preview ? '★' : '☆'}</span>
 -        </button>
-+        <span key={stars} className="cursor-pointer px-1 text-2xl text-accent" title={nameOf(stars)} onMouseEnter={() => setPreview(stars)} onClick={() => !disabled && onRate(stars)}>
 +          {stars <= preview ? '★' : '☆'}
 +        </span>
        ))}

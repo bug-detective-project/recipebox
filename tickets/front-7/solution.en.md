@@ -9,12 +9,12 @@
 3. **Use the element that is a control.**
 
    ```tsx
-   <div role="group" aria-label="Rate this recipe" className="flex gap-1" onMouseLeave={() => setPreview(0)}>
+   <div role="group" aria-label="Rate this recipe" className="flex gap-1.5" onMouseLeave={() => setPreview(0)}>
      {STARS.map((stars) => (
        <button
          key={stars}
          type="button"
-         className="rounded px-1 text-2xl text-accent disabled:opacity-50"
+         className="flex size-11 items-center justify-center rounded-full border border-border bg-surface-raised text-2xl leading-none text-accent shadow-sm transition-transform hover:scale-110 disabled:opacity-50"
          title={nameOf(stars)}
          aria-label={nameOf(stars)}
          disabled={disabled}

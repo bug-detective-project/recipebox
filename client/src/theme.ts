@@ -10,7 +10,11 @@ export function storedTheme(): Theme {
 
 /** The theme is an attribute of <html>: styles.css gives each color token a value per theme. */
 export function applyTheme(theme: Theme): void {
-  document.documentElement.dataset.theme = theme;
+  const root = document.documentElement;
+  // The new colors are painted at once: a transition would show each control fading from the old ones.
+  root.dataset.themeSwitching = '';
+  root.dataset.theme = theme;
+  requestAnimationFrame(() => requestAnimationFrame(() => delete root.dataset.themeSwitching));
 }
 
 /** The theme the cook chose, kept between visits. */

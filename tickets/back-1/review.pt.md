@@ -6,7 +6,7 @@ O caderno sabia ler "1h30". A edição consultava antes uma segunda regra, mais 
 
 - Quem decide o que um tempo de preparo significa é o `parsePrepTime`, em `server/src/duration.ts`. Criar e editar acabam os dois lá.
 - A rota de edição tinha um esquema próprio, o `recipeUpdateBody`, com um `pattern` para o `prepTime` do tempo em que um tempo era só minutos. O Fastify confere o esquema antes de a rota rodar, então a edição recusava `1h30` antes de o `parsePrepTime` ser consultado.
-- A página piorava a situação: ela escreve os minutos salvos de volta como `1h30`, e assim o próprio formulário produzia um valor que a edição recusava.
+- A página piorava a situação: o formulário envia todo tempo de uma hora ou mais como `1h30`, e assim o próprio formulário produzia um valor que a edição recusava.
 
 ## Por que a correção de referência está certa
 

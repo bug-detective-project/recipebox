@@ -38,7 +38,7 @@ Cada passo é uma coluna de texto muito larga, cortada na borda direita da tela.
 
 ## Critérios de aceite
 
-- [ ] Em telas de 375px e de 320px de largura, cada passo aparece inteiro dentro da tela: nada cortado, e sem rolagem para o lado, nem da página nem da lista.
+- [ ] Em uma tela de 375px de largura, cada passo aparece inteiro dentro da tela: nada cortado, e sem rolagem para o lado, nem da página nem da lista.
 - [ ] Um passo longo quebra em mais linhas.
 - [ ] O número de cada passo fica à esquerda do texto, e o texto mantém um tamanho legível (14px ou mais).
 - [ ] Em tela larga os passos ficam como hoje.

@@ -6,7 +6,7 @@ The cookbook knew how to read "1h30". The edit asked a second, older rule first,
 
 - What a preparation time means is decided by `parsePrepTime` in `server/src/duration.ts`. Creating and editing both end up there.
 - The edit route had its own schema, `recipeUpdateBody`, with a `pattern` for `prepTime` from the time when a time was only minutes. Fastify checks the schema before the route runs, so the edit refused `1h30` before `parsePrepTime` was ever asked.
-- The page made it worse: it writes the saved minutes back as `1h30`, so the form itself produced a value the edit refused.
+- The page made it worse: the form sends any time of an hour or more as `1h30`, so the form itself produced a value the edit refused.
 
 ## Why the reference fix is right
 

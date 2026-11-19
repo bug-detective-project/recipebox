@@ -16,7 +16,7 @@ function savesOf(page: Page): Request[] {
 async function fillNewRecipe(page: Page, title: string): Promise<void> {
   await page.goto('/recipes/new');
   await page.getByRole('textbox', { name: 'Title' }).fill(title);
-  await page.getByRole('textbox', { name: 'Preparation time' }).fill('10 min');
+  await page.getByRole('combobox', { name: 'Minutes' }).selectOption('10');
   await page.getByRole('textbox', { name: 'Step 1' }).fill('Serve.');
 }
 

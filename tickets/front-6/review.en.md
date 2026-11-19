@@ -26,4 +26,4 @@ The step list was written for one width and checked on one width. A phone is ano
 
 - A fixed width is a bet on the screen. Prefer "take what is there" (`flex-1`, `w-full`) with a `max-w-*` when a limit is wanted.
 - `overflow: hidden` on a layout problem removes the evidence, not the problem.
-- Check a new screen at 320px before calling it done. It takes ten seconds in the developer tools.
+- Check a new screen at 375px, the narrowest phone we support, before calling it done. It takes ten seconds in the developer tools.

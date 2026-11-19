@@ -72,10 +72,10 @@ index 0000000..72c3683
 +  });
 +});
 diff --git a/client/src/components/RecipeForm.tsx b/client/src/components/RecipeForm.tsx
-index 29ef427..4cdf2eb 100644
+index eb01558..813cb62 100644
 --- a/client/src/components/RecipeForm.tsx
 +++ b/client/src/components/RecipeForm.tsx
-@@ -42,12 +42,8 @@ const valuesOf = (recipe: RecipeDetail): RecipeFormValues => ({
+@@ -48,12 +48,8 @@ const valuesOf = (recipe: RecipeDetail): RecipeFormValues => ({
    steps: recipe.steps.map(({ text }) => ({ text })),
  });
  
@@ -90,16 +90,16 @@ index 29ef427..4cdf2eb 100644
    return {
      title: values.title,
      description: values.description,
-@@ -55,7 +51,7 @@ function inputOf(values: RecipeFormValues, editing?: RecipeDetail): RecipeInput
+@@ -61,7 +57,7 @@ function inputOf(values: RecipeFormValues, editing?: RecipeDetail): RecipeInput
      servings: values.servings,
-     prepTime: values.prepTime,
+     prepTime: formatPrepTime(values.prepMinutes),
      photo: values.photoUrl.trim() === '' ? null : { url: values.photoUrl.trim(), caption: values.photoCaption },
 -    ingredients,
 +    ingredients: values.ingredients,
      steps: values.steps.map((step) => step.text),
    };
  }
-@@ -96,7 +92,7 @@ export function RecipeForm({ editing, save }: { editing?: RecipeDetail; save: (i
+@@ -124,7 +120,7 @@ export function RecipeForm({ editing, save }: { editing?: RecipeDetail; save: (i
  
    const submit = handleSubmit(async (values) => {
      try {

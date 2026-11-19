@@ -9,13 +9,13 @@
 3. **Let the text wrap in the space it gets.**
 
    ```tsx
-   <ol className="flex flex-col gap-4" data-testid="steps">
+   <ol className="flex flex-col gap-5" data-testid="steps">
      {steps.map((step, index) => (
-       <li key={step.id} className="flex gap-3">
-         <span aria-hidden="true" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent font-semibold text-accent-content">
+       <li key={step.id} className="flex gap-4">
+         <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent font-display text-lg font-bold text-accent-content shadow-sm">
            {index + 1}
          </span>
-         <p className="min-w-0 flex-1 text-base leading-relaxed break-words" data-testid="step">
+         <p className="min-w-0 flex-1 pt-1 text-base leading-relaxed break-words" data-testid="step">
            {step.text}
          </p>
        </li>
@@ -27,4 +27,4 @@
 
 The reference also adds a regression test, `client/src/components/StepList.layout.test.tsx`. The test environment has no layout engine, so it checks the rules themselves: no fixed width and no `shrink-0` on the text of a step, and nothing in the list that cuts content off.
 
-Then run `npm test`, look at a recipe at 375px and at 320px, and move the card to **In QA**.
+Then run `npm test`, look at a recipe at 375px, and move the card to **In QA**.

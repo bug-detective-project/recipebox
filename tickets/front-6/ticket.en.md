@@ -38,7 +38,7 @@ Each step is one very wide column of text, cut off at the right edge of the scre
 
 ## Acceptance criteria
 
-- [ ] On screens 375px and 320px wide, every step is whole inside the screen: nothing cut off, and no scrolling sideways, of the page or of the list.
+- [ ] On a screen 375px wide, every step is whole inside the screen: nothing cut off, and no scrolling sideways, of the page or of the list.
 - [ ] A long step wraps into more lines.
 - [ ] The number of each step stays on the left of its text, and the text keeps a size that can be read (14px or more).
 - [ ] On a wide screen the steps look as they do today.

@@ -36,8 +36,8 @@ describe('the list after a recipe is edited', () => {
     renderApp('/');
 
     await editFromTheList('Garlic Butter Pasta', async () => {
-      await userEvent.clear(screen.getByRole('textbox', { name: 'Preparation time' }));
-      await userEvent.type(screen.getByRole('textbox', { name: 'Preparation time' }), '1h15');
+      await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Hours' }), '1');
+      await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Minutes' }), '15');
       await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Category' }), 'snack');
     });
     await screen.findByRole('heading', { name: 'Garlic Butter Pasta', level: 1 });

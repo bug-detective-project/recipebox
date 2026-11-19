@@ -35,7 +35,8 @@ test.describe('Ticket front-4: the list shows a recipe as it was saved', () => {
     const recipe = await createPublished(request, { title: uniqueTitle('QA Stew'), prepTime: '30 min', category: 'main' });
     await openEditFromTheList(page, recipe.title);
 
-    await page.getByRole('textbox', { name: 'Preparation time' }).fill('2h10');
+    await page.getByRole('combobox', { name: 'Hours' }).selectOption('2');
+    await page.getByRole('combobox', { name: 'Minutes' }).selectOption('10');
     await page.getByRole('combobox', { name: 'Category' }).selectOption('snack');
     await page.getByRole('textbox', { name: 'Description' }).fill('Edited by the QA suite.');
     await saveAndGoBackToTheList(page, recipe.title);

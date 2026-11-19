@@ -1,5 +1,5 @@
 diff --git a/client/src/components/IngredientList.tsx b/client/src/components/IngredientList.tsx
-index 2779ba5..def182d 100644
+index 33e86bf..3c73a28 100644
 --- a/client/src/components/IngredientList.tsx
 +++ b/client/src/components/IngredientList.tsx
 @@ -4,13 +4,16 @@ import { describeIngredient, scaleIngredients } from '../utils/scale.ts';
@@ -14,9 +14,9 @@ index 2779ba5..def182d 100644
      return <p className="text-muted">No ingredients yet.</p>;
    }
    return (
-     <ul className="flex list-disc flex-col gap-1 pl-5">
+     <ul className="flex flex-col divide-y divide-border">
 -      {scaled.map((ingredient) => (
 +      {shown.map((ingredient) => (
-         <li key={ingredient.id} data-testid="ingredient">
+         <li key={ingredient.id} className="flex items-baseline gap-3 py-2.5 before:size-1.5 before:shrink-0 before:-translate-y-0.5 before:rounded-full before:bg-accent" data-testid="ingredient">
            {describeIngredient(ingredient)}
          </li>

@@ -9,7 +9,7 @@ const MESSAGE = 'Add at least one ingredient';
 /** Fills what a new recipe needs besides its ingredients. */
 async function fillTheRest() {
   await userEvent.type(screen.getByRole('textbox', { name: 'Title' }), 'Plain Water');
-  await userEvent.type(screen.getByRole('textbox', { name: 'Preparation time' }), '1 min');
+  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Minutes' }), '5');
   await userEvent.type(screen.getByRole('textbox', { name: 'Step 1' }), 'Pour.');
 }
 

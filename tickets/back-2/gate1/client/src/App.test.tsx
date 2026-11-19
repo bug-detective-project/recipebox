@@ -1,7 +1,7 @@
-import { screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import { json, mockApi } from './test/mockApi.ts';
+import { createTestRecipes, json, mockApi } from './test/mockApi.ts';
 import { renderApp } from './test/renderApp.tsx';
 
 const cardTitles = () => screen.getAllByTestId('recipe-card').map((card) => within(card).getByRole('heading').textContent);
@@ -157,7 +157,7 @@ describe('the form of a recipe', () => {
     renderApp('/recipes/new');
 
     await userEvent.type(screen.getByRole('textbox', { name: 'Title' }), 'Tomato Soup');
-    await userEvent.type(screen.getByRole('textbox', { name: 'Preparation time' }), '40 min');
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Minutes' }), '40');
     await userEvent.clear(screen.getByRole('spinbutton', { name: 'Quantity of ingredient 1' }));
     await userEvent.type(screen.getByRole('spinbutton', { name: 'Quantity of ingredient 1' }), '800');
     await userEvent.type(screen.getByRole('textbox', { name: 'Unit of ingredient 1' }), 'g');
@@ -202,7 +202,8 @@ describe('the form of a recipe', () => {
 
     const title = await screen.findByRole('textbox', { name: 'Title' });
     expect(title).toHaveValue('Banana Pancakes');
-    expect(screen.getByRole('textbox', { name: 'Preparation time' })).toHaveValue('25 min');
+    expect(screen.getByRole('combobox', { name: 'Hours' })).toHaveValue('0');
+    expect(screen.getByRole('combobox', { name: 'Minutes' })).toHaveValue('25');
     expect(screen.getAllByTestId('ingredient-row')).toHaveLength(3);
 
     await userEvent.clear(title);
@@ -245,5 +246,56 @@ describe('an address that does not exist', () => {
     renderApp('/nowhere');
 
     expect(screen.getByRole('heading', { name: 'Page not found' })).toBeInTheDocument();
+  });
+});
+
+describe('the preparation time', () => {
+  it('is picked as hours and minutes and sent as the text the API reads', async () => {
+    const { requests } = mockApi();
+    renderApp('/recipes/1/edit');
+    await screen.findByRole('textbox', { name: 'Title' });
+    const group = screen.getByRole('group', { name: 'Preparation time' });
+
+    await userEvent.selectOptions(within(group).getByRole('combobox', { name: 'Hours' }), '1');
+    await userEvent.selectOptions(within(group).getByRole('combobox', { name: 'Minutes' }), '30');
+    await userEvent.click(screen.getByRole('button', { name: 'Save recipe' }));
+
+    await waitFor(() => expect(requests.find((request) => request.method === 'PUT')).toMatchObject({ body: { prepTime: '1h30' } }));
+  });
+
+  it('keeps minutes that are not a multiple of five', async () => {
+    const recipes = createTestRecipes();
+    recipes[0]!.prepMinutes = 27;
+    mockApi({ recipes });
+    renderApp('/recipes/1/edit');
+
+    expect(await screen.findByRole('combobox', { name: 'Minutes' })).toHaveValue('27');
+  });
+});
+
+describe('the photo link', () => {
+  it('shows the photo of the link while the cook types it', async () => {
+    mockApi();
+    renderApp('/recipes/1/edit');
+    const link = await screen.findByRole('textbox', { name: 'Photo link' });
+    expect(screen.getByTestId('photo-preview')).toHaveAttribute('src', '/images/banana-pancakes.jpg');
+
+    await userEvent.clear(link);
+    await userEvent.type(link, 'https://example.com/pancakes.jpg');
+
+    expect(screen.getByTestId('photo-preview')).toHaveAttribute('src', 'https://example.com/pancakes.jpg');
+  });
+
+  it('says so when the link does not open an image, and starts again with another link', async () => {
+    mockApi();
+    renderApp('/recipes/1/edit');
+    const link = await screen.findByRole('textbox', { name: 'Photo link' });
+
+    fireEvent.error(screen.getByTestId('photo-preview'));
+    expect(screen.getByTestId('photo-preview-error')).toHaveTextContent('This link does not open an image');
+
+    await userEvent.clear(link);
+    await userEvent.type(link, 'https://example.com/other.jpg');
+    expect(screen.getByTestId('photo-preview')).toBeInTheDocument();
   });
 });

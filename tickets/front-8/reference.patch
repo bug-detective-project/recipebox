@@ -64,7 +64,7 @@ index 0000000..6e6b5aa
 +  });
 +});
 diff --git a/client/src/components/IngredientList.tsx b/client/src/components/IngredientList.tsx
-index def182d..2779ba5 100644
+index 3c73a28..33e86bf 100644
 --- a/client/src/components/IngredientList.tsx
 +++ b/client/src/components/IngredientList.tsx
 @@ -4,16 +4,13 @@ import { describeIngredient, scaleIngredients } from '../utils/scale.ts';
@@ -79,9 +79,9 @@ index def182d..2779ba5 100644
      return <p className="text-muted">No ingredients yet.</p>;
    }
    return (
-     <ul className="flex list-disc flex-col gap-1 pl-5">
+     <ul className="flex flex-col divide-y divide-border">
 -      {shown.map((ingredient) => (
 +      {scaled.map((ingredient) => (
-         <li key={ingredient.id} data-testid="ingredient">
+         <li key={ingredient.id} className="flex items-baseline gap-3 py-2.5 before:size-1.5 before:shrink-0 before:-translate-y-0.5 before:rounded-full before:bg-accent" data-testid="ingredient">
            {describeIngredient(ingredient)}
          </li>

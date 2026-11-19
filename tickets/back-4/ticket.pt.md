@@ -46,7 +46,7 @@ Ou digite `pasta` no campo **Search** da lista.
 - [ ] Uma busca encontra receitas sem foto pelo título e pela descrição.
 - [ ] Uma busca lista juntas receitas com e sem foto, cada uma uma vez, por título.
 - [ ] Uma receita criada sem foto é encontrada na hora.
-- [ ] A busca continua lendo o que a foto mostra (a legenda): `q=glass jar` encontra a **Overnight Oats**.
+- [ ] A busca continua lendo o que a foto mostra (a legenda): `q=bowl of oats` encontra a **Overnight Oats**.
 - [ ] Uma busca continua respeitando o filtro de categoria.
 
 ## Ambiente
@@ -57,4 +57,4 @@ Ou digite `pasta` no campo **Search** da lista.
 ## Atividade
 
 **Ingrid Solberg** · 11/03/2026 11:26
-> A busca também olha a legenda da foto, fui eu que coloquei isso mês passado ("a glass jar of oats" acha a overnight oats). As fotos ficam em uma tabela só delas. Desconfio da minha junção.
+> A busca também olha a legenda da foto, fui eu que coloquei isso mês passado ("a bowl of oats" acha a overnight oats). As fotos ficam em uma tabela só delas. Desconfio da minha junção.

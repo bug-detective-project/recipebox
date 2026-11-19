@@ -1,6 +1,6 @@
 diff --git a/client/src/api/recipes.cache.test.tsx b/client/src/api/recipes.cache.test.tsx
 new file mode 100644
-index 0000000..d5d116b
+index 0000000..7486db2
 --- /dev/null
 +++ b/client/src/api/recipes.cache.test.tsx
 @@ -0,0 +1,59 @@
@@ -42,8 +42,8 @@ index 0000000..d5d116b
 +    renderApp('/');
 +
 +    await editFromTheList('Garlic Butter Pasta', async () => {
-+      await userEvent.clear(screen.getByRole('textbox', { name: 'Preparation time' }));
-+      await userEvent.type(screen.getByRole('textbox', { name: 'Preparation time' }), '1h15');
++      await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Hours' }), '1');
++      await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Minutes' }), '15');
 +      await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Category' }), 'snack');
 +    });
 +    await screen.findByRole('heading', { name: 'Garlic Butter Pasta', level: 1 });

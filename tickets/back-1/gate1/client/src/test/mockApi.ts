@@ -28,7 +28,7 @@ function recipe(id: number, title: string, overrides: Partial<RecipeDetail> = {}
 
 export function createTestRecipes(): RecipeDetail[] {
   return [
-    recipe(1, 'Banana Pancakes', { category: 'breakfast', prepMinutes: 25, photo: { url: '/images/banana-pancakes.svg', caption: 'A stack of pancakes' }, rating: { average: 4.7, count: 3 }, favorite: true }),
+    recipe(1, 'Banana Pancakes', { category: 'breakfast', prepMinutes: 25, photo: { url: '/images/banana-pancakes.jpg', caption: 'A stack of pancakes' }, rating: { average: 4.7, count: 3 }, favorite: true }),
     recipe(2, 'Garlic Butter Pasta', { prepMinutes: 20, rating: { average: 5, count: 1 } }),
     recipe(3, 'Lemon Tart', { category: 'dessert', prepMinutes: 80, servings: 8 }),
     recipe(4, 'Slow Beef Stew', { status: 'draft', prepMinutes: 200, ingredients: [{ id: 41, name: 'beef', quantity: 800, unit: 'g' }] }),

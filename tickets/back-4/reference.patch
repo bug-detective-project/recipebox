@@ -15,7 +15,7 @@ index e2c3c38..8819348 100644
        ['id', 'ASC'],
 diff --git a/server/src/search-without-photo.test.ts b/server/src/search-without-photo.test.ts
 new file mode 100644
-index 0000000..c9da909
+index 0000000..68fdadb
 --- /dev/null
 +++ b/server/src/search-without-photo.test.ts
 @@ -0,0 +1,37 @@
@@ -49,7 +49,7 @@ index 0000000..c9da909
 +  });
 +
 +  it('still searches what a photo shows', async () => {
-+    expect(await search('q=glass jar')).toEqual(['Overnight Oats']);
++    expect(await search('q=bowl of oats')).toEqual(['Overnight Oats']);
 +  });
 +
 +  it('keeps the other filters of a search', async () => {

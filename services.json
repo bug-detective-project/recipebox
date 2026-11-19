@@ -1,0 +1,8 @@
+{
+  "db": {
+    "image": "postgres:17",
+    "memory": "256m",
+    "env": { "POSTGRES_PASSWORD": "recipebox", "POSTGRES_DB": "recipebox" },
+    "variables": { "DATABASE_URL": "postgres://postgres:recipebox@{{host}}:{{port}}/recipebox" }
+  }
+}

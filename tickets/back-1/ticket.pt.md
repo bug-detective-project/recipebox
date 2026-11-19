@@ -16,13 +16,13 @@
 
 ## Descrição
 
-Escrevi a **Roast Chicken with Lemon** com tempo de preparo `1h30`, e o formulário aceitou. Hoje abri a receita para corrigir um erro de digitação na descrição, não mudei mais nada, cliquei em **Save recipe**, e o formulário recusou, embaixo do tempo de preparo:
+Escrevi a **Roast Chicken with Lemon** com tempo de preparo de 1 h 30 min, e o formulário aceitou. Hoje abri a receita para corrigir um erro de digitação na descrição, não mudei mais nada, cliquei em **Save recipe**, e o formulário recusou, embaixo do tempo de preparo:
 
 > must match pattern "^\d+ ?(min)?$"
 
-Eu não toquei no tempo. É o mesmo `1h30` que o próprio caderno escreveu no campo.
+Eu não toquei no tempo. O formulário continua mostrando o mesmo 1 h 30 min que eu escolhi.
 
-Toda receita de uma hora ou mais faz isso. Se eu reescrevo o tempo como `90 min`, o salvamento passa, e aí a página mostra `1h30` de novo, então a próxima pessoa que editar bate na mesma parede.
+Toda receita de uma hora ou mais faz isso; uma receita de 45 minutos salva sem problema. E o formulário não tem outro jeito de escrever noventa minutos que não seja 1 h 30 min, então uma receita de uma hora ou mais não pode mais ser editada de jeito nenhum.
 
 ## Passos para reproduzir
 

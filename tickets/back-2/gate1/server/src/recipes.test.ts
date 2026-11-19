@@ -30,7 +30,7 @@ describe('GET /api/recipes', () => {
       category: 'breakfast',
       status: 'published',
       prepMinutes: 25,
-      photo: { url: '/images/banana-pancakes.svg', caption: 'A stack of pancakes with banana slices on top' },
+      photo: { url: '/images/banana-pancakes.jpg', caption: 'A stack of pancakes with banana slices on top' },
       rating: { average: 4.7, count: 3 },
       favorite: true,
     });
@@ -50,7 +50,7 @@ describe('GET /api/recipes', () => {
   });
 
   it('searches what the photo shows', async () => {
-    expect(titles((await api.get<RecipeSummary[]>('/api/recipes?q=glass jar')).body)).toEqual(['Overnight Oats']);
+    expect(titles((await api.get<RecipeSummary[]>('/api/recipes?q=bowl of oats')).body)).toEqual(['Overnight Oats']);
   });
 
   it('reads % and _ in a search as plain characters', async () => {
@@ -86,7 +86,7 @@ describe('GET /api/recipes/:id', () => {
 
 describe('POST /api/recipes', () => {
   it('creates a draft with its parts', async () => {
-    const { status, body } = await api.post<RecipeDetail>('/api/recipes', recipeInput({ photo: { url: '/images/hummus.svg', caption: 'A red soup' } }));
+    const { status, body } = await api.post<RecipeDetail>('/api/recipes', recipeInput({ photo: { url: '/images/hummus.jpg', caption: 'A red soup' } }));
 
     expect(status).toBe(201);
     expect(body).toMatchObject({
@@ -95,7 +95,7 @@ describe('POST /api/recipes', () => {
       category: 'main',
       status: 'draft',
       prepMinutes: 30,
-      photo: { url: '/images/hummus.svg', caption: 'A red soup' },
+      photo: { url: '/images/hummus.jpg', caption: 'A red soup' },
       rating: { average: null, count: 0 },
       favorite: false,
     });

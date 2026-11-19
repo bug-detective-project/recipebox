@@ -1,8 +1,8 @@
 diff --git a/client/src/components/RecipeForm.tsx b/client/src/components/RecipeForm.tsx
-index ea9a934..29780d5 100644
+index 813cb62..481b818 100644
 --- a/client/src/components/RecipeForm.tsx
 +++ b/client/src/components/RecipeForm.tsx
-@@ -107,7 +107,7 @@ export function RecipeForm({ editing, save }: { editing?: RecipeDetail; save: (i
+@@ -114,7 +114,7 @@ export function RecipeForm({ editing, save }: { editing?: RecipeDetail; save: (i
      control,
      name: 'ingredients',
      // A rule of the whole list: its message is errors.ingredients.root.

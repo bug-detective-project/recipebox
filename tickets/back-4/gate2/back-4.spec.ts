@@ -28,7 +28,7 @@ test.describe('Ticket back-4: the search finds recipes without a photo', () => {
   });
 
   test('what a photo shows is still searched', async ({ request }) => {
-    expect(await titles(request, { q: 'glass jar' })).toEqual(['Overnight Oats']);
+    expect(await titles(request, { q: 'bowl of oats' })).toEqual(['Overnight Oats']);
     expect(await titles(request, { q: 'paprika' })).toEqual(['Hummus']);
   });
 

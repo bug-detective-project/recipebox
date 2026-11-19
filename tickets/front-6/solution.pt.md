@@ -27,4 +27,4 @@
 
 A referência também adiciona um teste de regressão, `client/src/components/StepList.layout.test.tsx`. O ambiente de teste não tem motor de layout, então ele confere as regras em si: nenhuma largura fixa e nenhum `shrink-0` no texto de um passo, e nada na lista que corte conteúdo.
 
-Depois rode `npm test`, olhe uma receita em 375px e em 320px e mova o card para **Em QA**.
+Depois rode `npm test`, olhe uma receita em 375px e mova o card para **Em QA**.

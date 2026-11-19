@@ -16,13 +16,13 @@
 
 ## Description
 
-I wrote the **Roast Chicken with Lemon** with a preparation time of `1h30`, and the form took it. Today I opened it to fix a typo in the description, changed nothing else, clicked **Save recipe**, and the form refused under the preparation time:
+I wrote the **Roast Chicken with Lemon** with a preparation time of 1 h 30 min, and the form took it. Today I opened it to fix a typo in the description, changed nothing else, clicked **Save recipe**, and the form refused under the preparation time:
 
 > must match pattern "^\d+ ?(min)?$"
 
-I did not touch the time. It is the same `1h30` the cookbook itself wrote into the field.
+I did not touch the time. The form still shows the same 1 h 30 min I picked.
 
-Any recipe of an hour or more does this. If I rewrite the time as `90 min` the save goes through, and then the page shows it as `1h30` again, so the next person who edits it hits the same wall.
+Any recipe of an hour or more does this; a recipe of 45 minutes saves fine. And the form has no way to write ninety minutes other than 1 h 30 min, so a recipe of an hour or more can no longer be edited at all.
 
 ## Steps to reproduce
 

@@ -26,4 +26,4 @@ A lista de passos foi escrita para uma largura e conferida em uma largura. Um ce
 
 - Uma largura fixa é uma aposta na tela. Prefira "ocupe o que houver" (`flex-1`, `w-full`), com um `max-w-*` quando quiser um limite.
 - `overflow: hidden` em um problema de layout tira a evidência, e não o problema.
-- Confira uma tela nova em 320px antes de dar por pronta. Leva dez segundos nas ferramentas de desenvolvedor.
+- Confira uma tela nova em 375px, o celular mais estreito que atendemos, antes de dar por pronta. Leva dez segundos nas ferramentas de desenvolvedor.

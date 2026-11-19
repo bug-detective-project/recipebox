@@ -43,7 +43,8 @@ test.describe('Ticket back-1: a preparation time is read the same way when creat
 
   test('a recipe of an hour and a half is saved again from its edit form', async ({ page, request }) => {
     await page.goto(`/recipes/${SAMPLE.chicken}/edit`);
-    await expect(page.getByRole('textbox', { name: 'Preparation time' })).toHaveValue('1h30');
+    await expect(page.getByRole('combobox', { name: 'Hours' })).toHaveValue('1');
+    await expect(page.getByRole('combobox', { name: 'Minutes' })).toHaveValue('30');
 
     await page.getByRole('textbox', { name: 'Description' }).fill('Saved again by the QA suite.');
     await page.getByRole('button', { name: 'Save recipe' }).click();
@@ -57,7 +58,8 @@ test.describe('Ticket back-1: a preparation time is read the same way when creat
     const draft = await createRecipe(request);
     await page.goto(`/recipes/${draft.id}/edit`);
 
-    await page.getByRole('textbox', { name: 'Preparation time' }).fill('2h05');
+    await page.getByRole('combobox', { name: 'Hours' }).selectOption('2');
+    await page.getByRole('combobox', { name: 'Minutes' }).selectOption('5');
     await page.getByRole('button', { name: 'Save recipe' }).click();
 
     await expect(page.getByRole('heading', { name: draft.title, level: 1 })).toBeVisible();

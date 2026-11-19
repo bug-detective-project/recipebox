@@ -27,4 +27,4 @@
 
 The reference also adds a regression test, `client/src/components/StepList.layout.test.tsx`. The test environment has no layout engine, so it checks the rules themselves: no fixed width and no `shrink-0` on the text of a step, and nothing in the list that cuts content off.
 
-Then run `npm test`, look at a recipe at 375px and at 320px, and move the card to **In QA**.
+Then run `npm test`, look at a recipe at 375px, and move the card to **In QA**.

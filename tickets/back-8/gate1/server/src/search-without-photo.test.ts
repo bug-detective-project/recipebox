@@ -28,7 +28,7 @@ describe('the search and the recipes without a photo', () => {
   });
 
   it('still searches what a photo shows', async () => {
-    expect(await search('q=glass jar')).toEqual(['Overnight Oats']);
+    expect(await search('q=bowl of oats')).toEqual(['Overnight Oats']);
   });
 
   it('keeps the other filters of a search', async () => {

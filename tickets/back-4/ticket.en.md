@@ -46,7 +46,7 @@ Or type `pasta` in the **Search** box of the list.
 - [ ] A search finds recipes without a photo by title and by description.
 - [ ] A search lists recipes with and without a photo together, each one once, by title.
 - [ ] A recipe created without a photo is found right away.
-- [ ] The search still reads what a photo shows (the caption): `q=glass jar` finds **Overnight Oats**.
+- [ ] The search still reads what a photo shows (the caption): `q=bowl of oats` finds **Overnight Oats**.
 - [ ] A search still respects the category filter.
 
 ## Environment
@@ -57,4 +57,4 @@ Or type `pasta` in the **Search** box of the list.
 ## Activity
 
 **Ingrid Solberg** · 11/03/2026 11:26
-> The search also looks at the caption of the photo, I added that myself last month ("a glass jar of oats" finds the overnight oats). The photos are in a table of their own. I suspect my join.
+> The search also looks at the caption of the photo, I added that myself last month ("a bowl of oats" finds the overnight oats). The photos are in a table of their own. I suspect my join.

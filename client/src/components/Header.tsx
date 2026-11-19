@@ -22,7 +22,8 @@ export function Header() {
             <span className="hidden text-xs text-muted sm:block">Saffron Lane Supper Club</span>
           </span>
         </Link>
-        <nav aria-label="Main" className="flex items-center gap-1">
+        {/* Below 768px the cook and the theme stay on the line of the name, and the pages go to a line of their own. */}
+        <nav aria-label="Main" className="order-last flex w-full items-center gap-1 md:order-none md:w-auto">
           <NavLink to="/" end className={navLink}>
             Recipes
           </NavLink>
@@ -37,7 +38,7 @@ export function Header() {
               {cook.charAt(0)}
             </span>
             <span className="sr-only sm:not-sr-only">Cooking as</span>
-            <select className="rounded-full bg-transparent py-1 pr-1 text-sm font-semibold text-content" value={cook} onChange={(event) => choose(event.target.value)}>
+            <select className="rounded-full bg-surface py-1 pr-1 text-sm font-semibold text-content" value={cook} onChange={(event) => choose(event.target.value)}>
               {COOKS.map((name) => (
                 <option key={name}>{name}</option>
               ))}

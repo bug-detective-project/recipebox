@@ -1,0 +1,442 @@
+{
+  "format": "bug-detective-project",
+  "formatVersion": 1,
+  "project": {
+    "id": "recipebox",
+    "name": "RecipeBox",
+    "difficulty": "beginner",
+    "stack": {
+      "frontend": "React · Vite · Tailwind",
+      "backend": "Node.js · Fastify",
+      "database": "PostgreSQL · Sequelize"
+    },
+    "services": {
+      "db": {
+        "image": "postgres:17",
+        "memory": "256m",
+        "env": {
+          "POSTGRES_PASSWORD": "recipebox",
+          "POSTGRES_DB": "recipebox"
+        },
+        "variables": {
+          "DATABASE_URL": "postgres://postgres:recipebox@{{host}}:{{port}}/recipebox"
+        }
+      }
+    }
+  },
+  "version": "1.0.0",
+  "createdAt": "2026-11-19T14:17:10.920Z",
+  "tickets": {
+    "total": 16,
+    "front": 8,
+    "back": 8
+  },
+  "entries": [
+    {
+      "id": "front-1",
+      "track": "front",
+      "order": 1,
+      "branch": "front-1",
+      "tag": "front-1-v1.0.0",
+      "commit": "df6aa7caa854ea2de67c6a14eb4e859d38f0f92a",
+      "commitMessage": "RecipeBox release front-1",
+      "codeDigest": "sha256:f50bd41c8ea52a73792885df9aac3b7d822950c2abaa7c4ff1bb452301990fca",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/front-1",
+        "files": 36,
+        "digest": "sha256:e58dbef5e93cdda0cda35a13b100ac502893cb1824e4eaf6ad43168fe0074fd4"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Forms and validation"
+        ],
+        "pt": [
+          "Formulários e validação"
+        ]
+      }
+    },
+    {
+      "id": "front-2",
+      "track": "front",
+      "order": 2,
+      "branch": "front-2",
+      "tag": "front-2-v1.0.0",
+      "commit": "05ae9671f8bf85dadb88b357482d95df70c52cd9",
+      "commitMessage": "RecipeBox release front-2",
+      "codeDigest": "sha256:cb6dde9e46e0a0b261664a799e723bfdee6ce7f65bececeaf9265cbc7f66a2be",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/front-2",
+        "files": 36,
+        "digest": "sha256:1095e64ea55581a44c2c1a3dbff51fb23132345b0d2ace802601f4edd38cd863"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Forms and validation",
+          "Using libraries correctly"
+        ],
+        "pt": [
+          "Formulários e validação",
+          "Usar bibliotecas corretamente"
+        ]
+      }
+    },
+    {
+      "id": "front-3",
+      "track": "front",
+      "order": 3,
+      "branch": "front-3",
+      "tag": "front-3-v1.0.0",
+      "commit": "23e7d6283ca0fe18c34099e5db7107af81086722",
+      "commitMessage": "RecipeBox release front-3",
+      "codeDigest": "sha256:d8da99908c24b17c06e7bfae43f75088d25a9c9de051b5b2b7ecd5765e6f6140",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/front-3",
+        "files": 36,
+        "digest": "sha256:7b55f4c5869b92c04cc107c47deb61be720001f3dfc945446e598ccd6439e3c5"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Routes and navigation"
+        ],
+        "pt": [
+          "Criação de rotas e navegação"
+        ]
+      }
+    },
+    {
+      "id": "front-4",
+      "track": "front",
+      "order": 4,
+      "branch": "front-4",
+      "tag": "front-4-v1.0.0",
+      "commit": "ff770aa24a1bb0425b857edc49b67db5a0acf6a7",
+      "commitMessage": "RecipeBox release front-4",
+      "codeDigest": "sha256:d3313efcee80904a0b06458489f3b77c7ff81b6579c31cd2c74745b1f1878d8c",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/front-4",
+        "files": 36,
+        "digest": "sha256:43e0c142456f751d72e7bd674af0c306d781bb07e489535cfe2efa184a07c248"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Working with APIs"
+        ],
+        "pt": [
+          "Consumo de API"
+        ]
+      }
+    },
+    {
+      "id": "front-5",
+      "track": "front",
+      "order": 5,
+      "branch": "front-5",
+      "tag": "front-5-v1.0.0",
+      "commit": "8bd34445590e40a55c83b803063d8309d809c6f9",
+      "commitMessage": "RecipeBox release front-5",
+      "codeDigest": "sha256:a0d0f36703f10717520283254c4c7d06815d62d31e51a88f80c1b23ebb41b916",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/front-5",
+        "files": 36,
+        "digest": "sha256:4c3d4ba2db7b3ac30cbbe62db52fc696c9e011f304f1333add4ef621f070d631"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Working with APIs"
+        ],
+        "pt": [
+          "Consumo de API"
+        ]
+      }
+    },
+    {
+      "id": "front-6",
+      "track": "front",
+      "order": 6,
+      "branch": "front-6",
+      "tag": "front-6-v1.0.0",
+      "commit": "fe104214eaa1821aa9f6a612a83dbed9bd29fed7",
+      "commitMessage": "RecipeBox release front-6",
+      "codeDigest": "sha256:832fe56139da4426e8cb682be877b2a43e2418a7103f4c7c02b09f8d3e796788",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/front-6",
+        "files": 36,
+        "digest": "sha256:f974ac68035c3a3a784f6b3f62320609ddfacfbd88c70e0c7569f10c1571e51f"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Responsive design"
+        ],
+        "pt": [
+          "Responsividade"
+        ]
+      }
+    },
+    {
+      "id": "front-7",
+      "track": "front",
+      "order": 7,
+      "branch": "front-7",
+      "tag": "front-7-v1.0.0",
+      "commit": "e7269bc3b93f933bdd72a7b29f4c8b74fe1e6d4a",
+      "commitMessage": "RecipeBox release front-7",
+      "codeDigest": "sha256:f7865b4e3eba09747e47a5e4e4e3c0612da55462258a0f00b940e6b2d452113c",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/front-7",
+        "files": 36,
+        "digest": "sha256:b956f3fc80dddb4229d91fab6e6c646b43b84ab741e1d0952cf941483098a2e9"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Accessibility"
+        ],
+        "pt": [
+          "Acessibilidade"
+        ]
+      }
+    },
+    {
+      "id": "front-8",
+      "track": "front",
+      "order": 8,
+      "branch": "front-8",
+      "tag": "front-8-v1.0.0",
+      "commit": "9a74441661f60815ad1dac66a29306540a868999",
+      "commitMessage": "RecipeBox release front-8",
+      "codeDigest": "sha256:a1aeafe87bea94a14f429d91e3e0b4a7b0fedd1e67eb6722c15f99f51cd78819",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/front-8",
+        "files": 36,
+        "digest": "sha256:3245fb3d616cee76d3b2e9ee49df9a72d1c849361045465fb9bc9a36cf8be563"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Rendering and lists"
+        ],
+        "pt": [
+          "Renderização e listas"
+        ]
+      }
+    },
+    {
+      "id": "back-1",
+      "track": "back",
+      "order": 1,
+      "branch": "back-1",
+      "tag": "back-1-v1.0.0",
+      "commit": "6a6377c7f94b0de4fcad9d07efb7a948dad2396c",
+      "commitMessage": "RecipeBox release back-1",
+      "codeDigest": "sha256:ffa4b36e1cd6e9e3271d69b40b6104fd74943404e63d443ee3e7bde9a5c97539",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/back-1",
+        "files": 36,
+        "digest": "sha256:a0db1424480efa22a8a0f700df6823dd8b0937f341fca02b2681cc2cf31ea7e8"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Regular expressions",
+          "Input validation"
+        ],
+        "pt": [
+          "Expressões regulares",
+          "Validação de entrada"
+        ]
+      }
+    },
+    {
+      "id": "back-2",
+      "track": "back",
+      "order": 2,
+      "branch": "back-2",
+      "tag": "back-2-v1.0.0",
+      "commit": "190bc268f0682327e685e7ea9caae7976818eea9",
+      "commitMessage": "RecipeBox release back-2",
+      "codeDigest": "sha256:090def5adc68699574880edb79783a7373f3a5f2865df0a61f91265f253387ec",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/back-2",
+        "files": 36,
+        "digest": "sha256:5c785099601367c4b0bc98303445b492b24630bed49ec248e54f96ae57d5dd66"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Input validation",
+          "Tracing data flow"
+        ],
+        "pt": [
+          "Validação de entrada",
+          "Rastrear o fluxo de dados"
+        ]
+      }
+    },
+    {
+      "id": "back-3",
+      "track": "back",
+      "order": 3,
+      "branch": "back-3",
+      "tag": "back-3-v1.0.0",
+      "commit": "f318aee64f0c2fbd36ea9363afea95ead05502d5",
+      "commitMessage": "RecipeBox release back-3",
+      "codeDigest": "sha256:3cb64320caacd71e37fd75bbe21dd0120f28e6e2fd1ee8f88d410dc837877301",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/back-3",
+        "files": 36,
+        "digest": "sha256:e2c5b2914ef4748477df24c8e9d96e1db93840e2380e4fdbc9150bd143ee0a63"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "API design and HTTP"
+        ],
+        "pt": [
+          "Desenho de API e HTTP"
+        ]
+      }
+    },
+    {
+      "id": "back-4",
+      "track": "back",
+      "order": 4,
+      "branch": "back-4",
+      "tag": "back-4-v1.0.0",
+      "commit": "798b2e09ee95064ece69ef72e64b2ec2e67102b1",
+      "commitMessage": "RecipeBox release back-4",
+      "codeDigest": "sha256:c4b6613cfa9a3bf2f75b979a1aa298f132d637bd11a87b3ac3c594f8a84df443",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/back-4",
+        "files": 36,
+        "digest": "sha256:8ec9372ecf4d90f5abfadcbe02bf3f24a01ebf0a72a9f1009900c19906696a7e"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Databases and queries"
+        ],
+        "pt": [
+          "Banco de dados e consultas"
+        ]
+      }
+    },
+    {
+      "id": "back-5",
+      "track": "back",
+      "order": 5,
+      "branch": "back-5",
+      "tag": "back-5-v1.0.0",
+      "commit": "a47605ab5023fdea12210bb489d9321f0fcb6c37",
+      "commitMessage": "RecipeBox release back-5",
+      "codeDigest": "sha256:2bed5384c10af463ee9766496f91c674f40f0c7f4b073326d1ea3c8e71b78c80",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/back-5",
+        "files": 36,
+        "digest": "sha256:08543300619238f83441a6b7df4b51316eb7f68750044cc53c9abb5f64298530"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Search, filters and pagination"
+        ],
+        "pt": [
+          "Busca, filtros e paginação"
+        ]
+      }
+    },
+    {
+      "id": "back-6",
+      "track": "back",
+      "order": 6,
+      "branch": "back-6",
+      "tag": "back-6-v1.0.0",
+      "commit": "bdf968f996527b91746da5aa6ac834ea3219f234",
+      "commitMessage": "RecipeBox release back-6",
+      "codeDigest": "sha256:e4f305a57c54f99daac4a25535e2c8bd0b9f11a4edb7e5256ab1097017ab9a3d",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/back-6",
+        "files": 36,
+        "digest": "sha256:72ee5ecbde8a8ea06c28d919b9285f3875bd17e26b18324aaca6c62eee0027e7"
+      },
+      "type": "fix",
+      "skills": {
+        "en": [
+          "Business rules and layers"
+        ],
+        "pt": [
+          "Regras de negócio e camadas"
+        ]
+      }
+    },
+    {
+      "id": "back-7",
+      "track": "back",
+      "order": 7,
+      "branch": "back-7",
+      "tag": "back-7-v1.0.0",
+      "commit": "88bc0f0eedf51fe9005a7a1f852f02e2b496f77f",
+      "commitMessage": "RecipeBox release back-7",
+      "codeDigest": "sha256:6a6f3bbf8bac284b7666bbc9ff22c0dadca430c9003bd9d5006e59da1520a712",
+      "codeFiles": 102,
+      "package": {
+        "path": "tickets/back-7",
+        "files": 36,
+        "digest": "sha256:524f467cf82cd7a1f49edff671bff07dee69614cd42088191a6ef70d56041acd"
+      },
+      "type": "build",
+      "skills": {
+        "en": [
+          "Logging in code"
+        ],
+        "pt": [
+          "Registros no código"
+        ]
+      }
+    },
+    {
+      "id": "back-8",
+      "track": "back",
+      "order": 8,
+      "branch": "back-8",
+      "tag": "back-8-v1.0.0",
+      "commit": "24625186cab38b3baa3201733af9ace4538f98ee",
+      "commitMessage": "RecipeBox release back-8",
+      "codeDigest": "sha256:907efe779ab1c96e9e85e9253fdd635f2691c577eb39d82e3e280c0c6909d98b",
+      "codeFiles": 103,
+      "package": {
+        "path": "tickets/back-8",
+        "files": 36,
+        "digest": "sha256:391e59a853240049b630aadb188e8b5c3fea2c3b8be14721f4fc4d5285c3942e"
+      },
+      "type": "complete",
+      "skills": {
+        "en": [
+          "API design and HTTP"
+        ],
+        "pt": [
+          "Desenho de API e HTTP"
+        ]
+      }
+    }
+  ]
+}

@@ -16,7 +16,7 @@ interface SampleRecipe {
   favorite?: boolean;
 }
 
-const photo = (file: string, caption: string) => ({ url: `/images/${file}.svg`, caption });
+const photo = (file: string, caption: string) => ({ url: `/images/${file}.jpg`, caption });
 
 /** The cookbook a new database starts with. The ids follow this order, from 1. */
 export const SAMPLE_RECIPES: SampleRecipe[] = [
@@ -42,7 +42,7 @@ export const SAMPLE_RECIPES: SampleRecipe[] = [
     prepMinutes: 10,
     ingredients: ['100|g|rolled oats', '250|ml|milk', '1|tbsp|honey', '50|g|berries'],
     steps: ['Stir the oats, the milk and the honey in a jar.', 'Close the jar and leave it in the fridge overnight.', 'Top with the berries before serving.'],
-    photo: photo('overnight-oats', 'A glass jar of oats with berries'),
+    photo: photo('overnight-oats', 'A bowl of oats topped with berries'),
     ratings: [4, 4],
   },
   {
@@ -65,7 +65,7 @@ export const SAMPLE_RECIPES: SampleRecipe[] = [
     prepMinutes: 90,
     ingredients: ['1||whole chicken', '2||lemon', '4|clove|garlic', '2|tbsp|olive oil', '1|tsp|salt'],
     steps: ['Heat the oven to 200°C.', 'Rub the chicken with the oil and the salt, and fill it with the lemons and the garlic.', 'Roast for one hour and fifteen minutes, basting twice.', 'Rest for ten minutes before carving.'],
-    photo: photo('roast-chicken', 'A golden roast chicken on a tray with lemon halves'),
+    photo: photo('roast-chicken', 'A golden roast chicken fresh from the oven'),
     ratings: [5, 4],
     favorite: true,
   },
@@ -78,7 +78,7 @@ export const SAMPLE_RECIPES: SampleRecipe[] = [
     prepMinutes: 45,
     ingredients: ['1||onion', '2|clove|garlic', '400|ml|coconut milk', '2|tbsp|curry paste', '500|g|mixed vegetables', '300|g|rice'],
     steps: ['Fry the chopped onion and the garlic until soft.', 'Stir in the curry paste for one minute.', 'Add the vegetables and the coconut milk and simmer for twenty minutes.', 'Serve over the cooked rice.'],
-    photo: photo('vegetable-curry', 'A bowl of yellow curry next to white rice'),
+    photo: photo('vegetable-curry', 'A plate of curry with carrots, potatoes and rice'),
     ratings: [4, 3, 4],
   },
   {
@@ -90,7 +90,7 @@ export const SAMPLE_RECIPES: SampleRecipe[] = [
     prepMinutes: 5,
     ingredients: ['4|tbsp|flour', '2|tbsp|cocoa powder', '2|tbsp|sugar', '1||egg', '3|tbsp|milk'],
     steps: ['Mix everything in a large mug until smooth.', 'Microwave on high for ninety seconds.', 'Let it cool for a minute: the middle is very hot.'],
-    photo: photo('mug-cake', 'A chocolate cake rising out of a white mug'),
+    photo: photo('mug-cake', 'A slice of dark chocolate cake'),
     ratings: [5, 5, 5, 4],
     favorite: true,
   },
@@ -136,7 +136,7 @@ export const SAMPLE_RECIPES: SampleRecipe[] = [
     prepMinutes: 15,
     ingredients: ['1|l|water', '3|bag|green tea', '1|bunch|mint', '2|tbsp|honey'],
     steps: ['Steep the tea and the mint in hot water for five minutes.', 'Stir in the honey, then cool it down with ice.'],
-    photo: photo('mint-tea', 'Two tall glasses of iced tea with mint leaves'),
+    photo: photo('mint-tea', 'A tall glass of iced tea with a sprig of mint'),
     ratings: [3, 4],
   },
   {

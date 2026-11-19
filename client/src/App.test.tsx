@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { createTestRecipes, json, mockApi } from './test/mockApi.ts';
@@ -270,5 +270,32 @@ describe('the preparation time', () => {
     renderApp('/recipes/1/edit');
 
     expect(await screen.findByRole('combobox', { name: 'Minutes' })).toHaveValue('27');
+  });
+});
+
+describe('the photo link', () => {
+  it('shows the photo of the link while the cook types it', async () => {
+    mockApi();
+    renderApp('/recipes/1/edit');
+    const link = await screen.findByRole('textbox', { name: 'Photo link' });
+    expect(screen.getByTestId('photo-preview')).toHaveAttribute('src', '/images/banana-pancakes.jpg');
+
+    await userEvent.clear(link);
+    await userEvent.type(link, 'https://example.com/pancakes.jpg');
+
+    expect(screen.getByTestId('photo-preview')).toHaveAttribute('src', 'https://example.com/pancakes.jpg');
+  });
+
+  it('says so when the link does not open an image, and starts again with another link', async () => {
+    mockApi();
+    renderApp('/recipes/1/edit');
+    const link = await screen.findByRole('textbox', { name: 'Photo link' });
+
+    fireEvent.error(screen.getByTestId('photo-preview'));
+    expect(screen.getByTestId('photo-preview-error')).toHaveTextContent('This link does not open an image');
+
+    await userEvent.clear(link);
+    await userEvent.type(link, 'https://example.com/other.jpg');
+    expect(screen.getByTestId('photo-preview')).toBeInTheDocument();
   });
 });

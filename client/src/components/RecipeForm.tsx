@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
 import type { FieldPath } from 'react-hook-form';
 import { Link } from 'react-router';
 import { ApiError } from '../api/http.ts';
@@ -8,6 +8,7 @@ import type { Category, RecipeDetail, RecipeInput } from '../api/types.ts';
 import { formatPrepTime } from '../utils/prepTime.ts';
 import { DurationPicker } from './DurationPicker.tsx';
 import { Icon } from './Icon.tsx';
+import { PhotoPreview } from './PhotoPreview.tsx';
 
 /** What the form holds: every field as the cook sees it. */
 export interface RecipeFormValues {
@@ -108,6 +109,7 @@ export function RecipeForm({ editing, save }: { editing?: RecipeDetail; save: (i
     setError,
     formState: { errors, isSubmitting },
   } = useForm<RecipeFormValues>({ defaultValues: editing ? valuesOf(editing) : NEW_RECIPE });
+  const photoUrl = useWatch({ control, name: 'photoUrl' });
   const ingredients = useFieldArray({
     control,
     name: 'ingredients',
@@ -187,18 +189,21 @@ export function RecipeForm({ editing, save }: { editing?: RecipeDetail; save: (i
         </div>
       </Section>
 
-      <Section title="Photo" hint="Optional. Say what the photo shows: the search reads it, and so do screen readers.">
-        <div className="grid gap-4 md:grid-cols-2">
-          <label className={label}>
-            Photo address
-            <input className={input} placeholder="/images/hummus.svg" {...register('photoUrl')} />
-            {errors.photoUrl && <span className={fieldError}>{errors.photoUrl.message}</span>}
-          </label>
-          <label className={label}>
-            What the photo shows
-            <input className={input} {...register('photoCaption')} />
-            {errors.photoCaption && <span className={fieldError}>{errors.photoCaption.message}</span>}
-          </label>
+      <Section title="Photo" hint="Optional. Paste the link of a photo that is already on the internet, and say what it shows: the search reads it, and so do screen readers.">
+        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,14rem)] md:items-start">
+          <div className="flex flex-col gap-4">
+            <label className={label}>
+              Photo link
+              <input className={input} type="url" inputMode="url" placeholder="https://…" {...register('photoUrl')} />
+              {errors.photoUrl && <span className={fieldError}>{errors.photoUrl.message}</span>}
+            </label>
+            <label className={label}>
+              What the photo shows
+              <input className={input} placeholder="A plate of hummus with olive oil" {...register('photoCaption')} />
+              {errors.photoCaption && <span className={fieldError}>{errors.photoCaption.message}</span>}
+            </label>
+          </div>
+          <PhotoPreview key={photoUrl} url={photoUrl} />
         </div>
       </Section>
 

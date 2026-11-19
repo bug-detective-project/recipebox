@@ -6,11 +6,11 @@ export function RatingSummary({ rating }: { rating: Rating }) {
     return <span className="text-sm text-muted">No ratings yet</span>;
   }
   return (
-    <span className="text-sm text-muted" data-testid="rating-summary">
+    <span className="inline-flex items-center gap-1 text-sm font-medium text-content" data-testid="rating-summary">
       <span aria-hidden="true" className="text-accent">
         ★
       </span>{' '}
-      {rating.average.toFixed(1)} ({rating.count} {rating.count === 1 ? 'rating' : 'ratings'})
+      {rating.average.toFixed(1)} <span className="font-normal text-muted">({rating.count} {rating.count === 1 ? 'rating' : 'ratings'})</span>
     </span>
   );
 }

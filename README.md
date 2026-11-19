@@ -47,8 +47,13 @@ In VS Code, the SQLTools extension (recommended by this project) connects to the
 
 - **A recipe is a draft or published.** A new recipe starts as a draft; publishing is a step of its
   own (`POST /api/recipes/:id/publish`), and only published recipes are rated.
-- **The preparation time is typed as text** ("45 min", "1h30") and kept in minutes. One function
-  reads it (`server/src/duration.ts`); the screen writes it back (`client/src/utils/prepTime.ts`).
+- **The preparation time travels as text** ("45 min", "1h30") and is kept in minutes. One function
+  reads it (`server/src/duration.ts`). The form picks hours and minutes
+  (`client/src/components/DurationPicker.tsx`) and writes them as that text
+  (`client/src/utils/prepTime.ts`).
+- **A photo is a link**, to an image already on the internet or to one served by the client (the
+  sample recipes use `client/public/images/`, credited in `client/public/images/CREDITS.md`). The
+  form shows a preview of the link. Nothing is uploaded.
 - **The filters of the list live in the URL** (`client/src/filters.ts`), so a reload, a shared link
   and the Back button show the same list.
 - **The client keeps a cache of what the API answered** (TanStack Query, `client/src/api/`). After a

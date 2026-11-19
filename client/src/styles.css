@@ -8,59 +8,126 @@
  * token (bg-surface, text-content…), never a fixed color. Changing a theme is changing this file.
  */
 :root {
-  --surface: #f8fafc;
+  --surface: #faf6ef;
   --surface-raised: #ffffff;
-  --content: #0f172a;
-  --muted: #475569;
-  --border: #cbd5e1;
-  --accent: #b45309;
+  --surface-sunken: #f1eadd;
+  --content: #2a211a;
+  --muted: #6b5d50;
+  --border: #e2d7c5;
+  --border-strong: #c9b99f;
+  --accent: #b4530a;
+  --accent-strong: #8f3f06;
+  --accent-soft: #fbeedd;
   --accent-content: #ffffff;
-  --danger: #b91c1c;
+  --herb: #3f6b3a;
+  --herb-soft: #e6f0df;
+  --danger: #b3261e;
+  --danger-soft: #fbe9e7;
+  --shadow: 42 33 26;
   color-scheme: light;
 }
 
 [data-theme='dark'] {
-  --surface: #0f172a;
-  --surface-raised: #1e293b;
-  --content: #f1f5f9;
-  --muted: #cbd5e1;
-  --border: #475569;
-  --accent: #fcd34d;
-  --accent-content: #451a03;
-  --danger: #fca5a5;
+  --surface: #17120e;
+  --surface-raised: #221b15;
+  --surface-sunken: #110d0a;
+  --content: #f3ebe0;
+  --muted: #b8a996;
+  --border: #3a2f25;
+  --border-strong: #55473a;
+  --accent: #f4a64a;
+  --accent-strong: #f7bd77;
+  --accent-soft: #3a2710;
+  --accent-content: #2a1803;
+  --herb: #9fca95;
+  --herb-soft: #1f2e1c;
+  --danger: #f2a199;
+  --danger-soft: #3b1614;
+  --shadow: 0 0 0;
   color-scheme: dark;
 }
 
 @theme inline {
   --color-surface: var(--surface);
   --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
   --color-content: var(--content);
   --color-muted: var(--muted);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
   --color-accent-content: var(--accent-content);
+  --color-herb: var(--herb);
+  --color-herb-soft: var(--herb-soft);
   --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  /* Titles are set in a book serif, everything else in the system's interface font. */
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --shadow-card: 0 1px 2px rgb(var(--shadow) / 0.06), 0 8px 24px -12px rgb(var(--shadow) / 0.18);
+  --shadow-lift: 0 2px 4px rgb(var(--shadow) / 0.08), 0 18px 40px -16px rgb(var(--shadow) / 0.28);
 }
 
 body {
   background-color: var(--surface);
   color: var(--content);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* One look for every field and button of the cookbook. */
+/* One look for every field, button and card of the cookbook. */
 @utility field {
-  @apply rounded-lg border border-border bg-surface-raised px-3 py-2 text-content;
+  @apply w-full rounded-lg border border-border-strong bg-surface-raised px-3 py-2 text-content shadow-sm transition-colors placeholder:text-muted/70 hover:border-accent/60;
 }
 
 @utility button {
-  @apply rounded-lg border border-border bg-surface-raised px-3 py-2 font-medium text-content disabled:cursor-not-allowed disabled:opacity-50;
+  @apply inline-flex items-center justify-center gap-2 rounded-lg border border-border-strong bg-surface-raised px-3.5 py-2 text-sm font-semibold text-content shadow-sm transition-colors hover:bg-surface-sunken disabled:cursor-not-allowed disabled:opacity-50;
 }
 
 @utility button-primary {
-  @apply rounded-lg bg-accent px-4 py-2 font-semibold text-accent-content disabled:cursor-not-allowed disabled:opacity-50;
+  @apply inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-content shadow-sm transition-colors hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+@utility button-danger {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-3.5 py-2 text-sm font-semibold text-danger transition-colors hover:bg-danger-soft disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+@utility card {
+  @apply rounded-2xl border border-border bg-surface-raised shadow-card;
+}
+
+/* A small uppercase line above a title: the category of a recipe, the name of a section. */
+@utility eyebrow {
+  @apply text-xs font-semibold tracking-[0.14em] text-accent uppercase;
+}
+
+@utility chip {
+  @apply inline-flex items-center gap-1 rounded-full border border-border bg-surface-raised px-2.5 py-0.5 text-xs font-semibold text-muted;
+}
+
+/* The list a select opens follows the theme too (a transparent select would open a white list). */
+select option {
+  background-color: var(--surface-raised);
+  color: var(--content);
+}
+
+/* While the theme changes nothing transitions (see applyTheme in theme.ts). */
+[data-theme-switching] *,
+[data-theme-switching] *::before,
+[data-theme-switching] *::after {
+  transition: none !important;
 }
 
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
 }

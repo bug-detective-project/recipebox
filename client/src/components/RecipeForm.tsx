@@ -1,9 +1,14 @@
-import { useFieldArray, useForm } from 'react-hook-form';
+import type { ReactNode } from 'react';
+import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
 import type { FieldPath } from 'react-hook-form';
+import { Link } from 'react-router';
 import { ApiError } from '../api/http.ts';
 import { CATEGORIES, CATEGORY_LABELS } from '../api/types.ts';
 import type { Category, RecipeDetail, RecipeInput } from '../api/types.ts';
 import { formatPrepTime } from '../utils/prepTime.ts';
+import { DurationPicker } from './DurationPicker.tsx';
+import { Icon } from './Icon.tsx';
+import { PhotoPreview } from './PhotoPreview.tsx';
 
 /** What the form holds: every field as the cook sees it. */
 export interface RecipeFormValues {
@@ -11,7 +16,8 @@ export interface RecipeFormValues {
   description: string;
   category: Category;
   servings: number;
-  prepTime: string;
+  /** Picked as hours and minutes; the API gets it as text ("45 min", "1h30"). */
+  prepMinutes: number;
   photoUrl: string;
   photoCaption: string;
   ingredients: { name: string; quantity: number; unit: string }[];
@@ -23,7 +29,7 @@ const NEW_RECIPE: RecipeFormValues = {
   description: '',
   category: 'main',
   servings: 4,
-  prepTime: '',
+  prepMinutes: 0,
   photoUrl: '',
   photoCaption: '',
   ingredients: [{ name: '', quantity: 1, unit: '' }],
@@ -35,7 +41,7 @@ const valuesOf = (recipe: RecipeDetail): RecipeFormValues => ({
   description: recipe.description,
   category: recipe.category,
   servings: recipe.servings,
-  prepTime: formatPrepTime(recipe.prepMinutes),
+  prepMinutes: recipe.prepMinutes,
   photoUrl: recipe.photo?.url ?? '',
   photoCaption: recipe.photo?.caption ?? '',
   ingredients: recipe.ingredients.map(({ name, quantity, unit }) => ({ name, quantity, unit })),
@@ -49,7 +55,7 @@ function inputOf(values: RecipeFormValues): RecipeInput {
     description: values.description,
     category: values.category,
     servings: values.servings,
-    prepTime: values.prepTime,
+    prepTime: formatPrepTime(values.prepMinutes),
     photo: values.photoUrl.trim() === '' ? null : { url: values.photoUrl.trim(), caption: values.photoCaption },
     ingredients: values.ingredients,
     steps: values.steps.map((step) => step.text),
@@ -61,14 +67,35 @@ function formField(apiField: string): FieldPath<RecipeFormValues> | 'root' {
   if (apiField.startsWith('photo')) {
     return apiField.endsWith('caption') ? 'photoCaption' : 'photoUrl';
   }
+  if (apiField === 'prepTime') {
+    return 'prepMinutes';
+  }
   if (/^steps\.\d+$/.test(apiField)) {
     return `${apiField}.text` as FieldPath<RecipeFormValues>;
   }
   return apiField === 'body' ? 'root' : (apiField as FieldPath<RecipeFormValues>);
 }
 
-const label = 'flex flex-col gap-1 text-sm font-medium text-muted';
-const fieldError = 'text-sm font-normal text-danger';
+const label = 'flex flex-col gap-1.5 text-xs font-semibold tracking-wide text-muted uppercase';
+const input = 'field text-base font-normal tracking-normal normal-case';
+const fieldError = 'text-sm font-medium tracking-normal text-danger normal-case';
+const columnTitle = 'text-xs font-semibold tracking-wide text-muted uppercase';
+
+/** A part of the form, as a card with its title and a line about what goes in it. */
+function Section({ title, hint, children }: { title: string; hint: string; children: ReactNode }) {
+  return (
+    <fieldset className="card flex min-w-0 flex-col gap-4 p-5 sm:p-6">
+      <legend className="sr-only">{title}</legend>
+      <div>
+        <p aria-hidden="true" className="font-display text-xl font-bold">
+          {title}
+        </p>
+        <p className="text-sm text-muted">{hint}</p>
+      </div>
+      {children}
+    </fieldset>
+  );
+}
 
 /**
  * The form of a recipe: a new one, or the changes to `editing`. `save` sends it to the API; what
@@ -82,6 +109,7 @@ export function RecipeForm({ editing, save }: { editing?: RecipeDetail; save: (i
     setError,
     formState: { errors, isSubmitting },
   } = useForm<RecipeFormValues>({ defaultValues: editing ? valuesOf(editing) : NEW_RECIPE });
+  const photoUrl = useWatch({ control, name: 'photoUrl' });
   const ingredients = useFieldArray({
     control,
     name: 'ingredients',
@@ -106,72 +134,101 @@ export function RecipeForm({ editing, save }: { editing?: RecipeDetail; save: (i
 
   return (
     <form className="flex flex-col gap-6" onSubmit={(event) => void submit(event)} noValidate>
-      <div className="grid gap-3 rounded-xl border border-border bg-surface-raised p-4 md:grid-cols-2">
-        <label className={`${label} md:col-span-2`}>
-          Title
-          <input className="field" {...register('title', { required: 'Give the recipe a title', minLength: { value: 3, message: 'At least 3 characters' } })} />
-          {errors.title && <span className={fieldError}>{errors.title.message}</span>}
-        </label>
-        <label className={`${label} md:col-span-2`}>
-          Description
-          <textarea className="field" rows={2} {...register('description')} />
-          {errors.description && <span className={fieldError}>{errors.description.message}</span>}
-        </label>
-        <label className={label}>
-          Category
-          <select className="field" {...register('category')}>
-            {CATEGORIES.map((category) => (
-              <option key={category} value={category}>
-                {CATEGORY_LABELS[category]}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={label}>
-          Servings
-          <input
-            className="field"
-            type="number"
-            min="1"
-            max="100"
-            step="1"
-            {...register('servings', { valueAsNumber: true, required: 'How many servings?', min: { value: 1, message: 'At least 1' }, max: { value: 100, message: 'At most 100' } })}
-          />
-          {errors.servings && <span className={fieldError}>{errors.servings.message}</span>}
-        </label>
-        <label className={label}>
-          Preparation time
-          <input className="field" placeholder="45 min or 1h30" {...register('prepTime', { required: 'How long does it take?' })} />
-          {errors.prepTime && <span className={fieldError}>{errors.prepTime.message}</span>}
-        </label>
-        <label className={label}>
-          Photo address
-          <input className="field" placeholder="/images/hummus.svg" {...register('photoUrl')} />
-          {errors.photoUrl && <span className={fieldError}>{errors.photoUrl.message}</span>}
-        </label>
-        <label className={`${label} md:col-span-2`}>
-          What the photo shows
-          <input className="field" {...register('photoCaption')} />
-          {errors.photoCaption && <span className={fieldError}>{errors.photoCaption.message}</span>}
-        </label>
-      </div>
+      <Section title="The basics" hint="What it is, who it feeds and how long it takes.">
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className={`${label} md:col-span-2`}>
+            Title
+            <input className={input} {...register('title', { required: 'Give the recipe a title', minLength: { value: 3, message: 'At least 3 characters' } })} />
+            {errors.title && <span className={fieldError}>{errors.title.message}</span>}
+          </label>
+          <label className={`${label} md:col-span-2`}>
+            Description
+            <textarea className={input} rows={2} {...register('description')} />
+            {errors.description && <span className={fieldError}>{errors.description.message}</span>}
+          </label>
+          <label className={label}>
+            Category
+            <select className={input} {...register('category')}>
+              {CATEGORIES.map((category) => (
+                <option key={category} value={category}>
+                  {CATEGORY_LABELS[category]}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.8fr)] gap-4">
+            <label className={label}>
+              Servings
+              <input
+                className={input}
+                type="number"
+                min="1"
+                max="100"
+                step="1"
+                {...register('servings', { valueAsNumber: true, required: 'How many servings?', min: { value: 1, message: 'At least 1' }, max: { value: 100, message: 'At most 100' } })}
+              />
+              {errors.servings && <span className={fieldError}>{errors.servings.message}</span>}
+            </label>
+            <div role="group" aria-labelledby="prep-time-label" className={label}>
+              <span id="prep-time-label">Preparation time</span>
+              <Controller
+                control={control}
+                name="prepMinutes"
+                rules={{ validate: (minutes) => minutes > 0 || 'How long does it take?' }}
+                render={({ field }) => (
+                  <DurationPicker value={field.value} onChange={field.onChange} invalid={errors.prepMinutes !== undefined} describedBy={errors.prepMinutes ? 'error-prep-time' : undefined} />
+                )}
+              />
+              {errors.prepMinutes && (
+                <span id="error-prep-time" className={fieldError}>
+                  {errors.prepMinutes.message}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </Section>
 
-      <fieldset className="flex flex-col gap-3 rounded-xl border border-border bg-surface-raised p-4">
-        <legend className="px-1 text-lg font-semibold">Ingredients</legend>
+      <Section title="Photo" hint="Optional. Paste the link of a photo that is already on the internet, and say what it shows: the search reads it, and so do screen readers.">
+        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,14rem)] md:items-start">
+          <div className="flex flex-col gap-4">
+            <label className={label}>
+              Photo link
+              <input className={input} type="url" inputMode="url" placeholder="https://…" {...register('photoUrl')} />
+              {errors.photoUrl && <span className={fieldError}>{errors.photoUrl.message}</span>}
+            </label>
+            <label className={label}>
+              What the photo shows
+              <input className={input} placeholder="A plate of hummus with olive oil" {...register('photoCaption')} />
+              {errors.photoCaption && <span className={fieldError}>{errors.photoCaption.message}</span>}
+            </label>
+          </div>
+          <PhotoPreview key={photoUrl} url={photoUrl} />
+        </div>
+      </Section>
+
+      <Section title="Ingredients" hint="One per row, with the quantity for the servings above.">
+        {ingredients.fields.length > 0 && (
+          <div aria-hidden="true" className="hidden grid-cols-[6rem_6rem_1fr_2.5rem] gap-2 sm:grid">
+            <span className={columnTitle}>Quantity</span>
+            <span className={columnTitle}>Unit</span>
+            <span className={columnTitle}>Ingredient</span>
+          </div>
+        )}
         {ingredients.fields.map((field, index) => (
-          <div key={field.id} className="grid grid-cols-[5rem_5rem_1fr_auto] items-start gap-2" data-testid="ingredient-row">
+          <div key={field.id} className="grid grid-cols-[4.5rem_4.5rem_1fr_2.5rem] items-start gap-2 sm:grid-cols-[6rem_6rem_1fr_2.5rem]" data-testid="ingredient-row">
             <input
-              className="field min-w-0"
+              className={`${input} min-w-0`}
               type="number"
               min="0"
               step="any"
               aria-label={`Quantity of ingredient ${index + 1}`}
               {...register(`ingredients.${index}.quantity`, { valueAsNumber: true, required: true, validate: (value) => value > 0 })}
             />
-            <input className="field min-w-0" placeholder="g, cup…" aria-label={`Unit of ingredient ${index + 1}`} {...register(`ingredients.${index}.unit`)} />
-            <input className="field min-w-0" placeholder="flour" aria-label={`Name of ingredient ${index + 1}`} {...register(`ingredients.${index}.name`, { validate: (value) => value.trim() !== '' })} />
-            <button type="button" className="button" aria-label={`Remove ingredient ${index + 1}`} onClick={() => ingredients.remove(index)}>
-              Remove
+            <input className={`${input} min-w-0`} placeholder="g, cup…" aria-label={`Unit of ingredient ${index + 1}`} {...register(`ingredients.${index}.unit`)} />
+            <input className={`${input} min-w-0`} placeholder="flour" aria-label={`Name of ingredient ${index + 1}`} {...register(`ingredients.${index}.name`, { validate: (value) => value.trim() !== '' })} />
+            <button type="button" className="button-danger size-10 p-0" aria-label={`Remove ingredient ${index + 1}`} title="Remove" onClick={() => ingredients.remove(index)}>
+              <Icon name="trash" />
             </button>
             {errors.ingredients?.[index] && <span className={`${fieldError} col-span-4`}>Write a quantity above zero and a name</span>}
           </div>
@@ -181,33 +238,40 @@ export function RecipeForm({ editing, save }: { editing?: RecipeDetail; save: (i
             {errors.ingredients.root.message}
           </span>
         )}
-        <button type="button" className="button self-start" onClick={() => ingredients.append({ name: '', quantity: 1, unit: '' })}>
+        <button type="button" className="button self-start border-dashed" onClick={() => ingredients.append({ name: '', quantity: 1, unit: '' })}>
+          <Icon name="plus" />
           Add ingredient
         </button>
-      </fieldset>
+      </Section>
 
-      <fieldset className="flex flex-col gap-3 rounded-xl border border-border bg-surface-raised p-4">
-        <legend className="px-1 text-lg font-semibold">Steps</legend>
+      <Section title="Steps" hint="In the order they are done. One action per step reads best at the stove.">
         {steps.fields.map((field, index) => (
-          <div key={field.id} className="grid grid-cols-[1fr_auto] items-start gap-2" data-testid="step-row">
-            <textarea className="field min-w-0" rows={2} aria-label={`Step ${index + 1}`} {...register(`steps.${index}.text`, { validate: (value) => value.trim() !== '' })} />
-            <button type="button" className="button" aria-label={`Remove step ${index + 1}`} onClick={() => steps.remove(index)}>
-              Remove
+          <div key={field.id} className="grid grid-cols-[2.25rem_1fr_2.5rem] items-start gap-2" data-testid="step-row">
+            <span aria-hidden="true" className="mt-1 flex size-9 items-center justify-center rounded-full bg-accent-soft font-display text-lg font-bold text-accent-strong">
+              {index + 1}
+            </span>
+            <textarea className={`${input} min-w-0`} rows={2} aria-label={`Step ${index + 1}`} {...register(`steps.${index}.text`, { validate: (value) => value.trim() !== '' })} />
+            <button type="button" className="button-danger size-10 p-0" aria-label={`Remove step ${index + 1}`} title="Remove" onClick={() => steps.remove(index)}>
+              <Icon name="trash" />
             </button>
-            {errors.steps?.[index] && <span className={`${fieldError} col-span-2`}>Write what to do in this step</span>}
+            {errors.steps?.[index] && <span className={`${fieldError} col-span-3`}>Write what to do in this step</span>}
           </div>
         ))}
-        <button type="button" className="button self-start" onClick={() => steps.append({ text: '' })}>
+        <button type="button" className="button self-start border-dashed" onClick={() => steps.append({ text: '' })}>
+          <Icon name="plus" />
           Add step
         </button>
-      </fieldset>
+      </Section>
 
-      <div className="flex items-center gap-3">
-        <button type="submit" className="button-primary" disabled={isSubmitting}>
+      <div className="card flex flex-wrap items-center gap-3 p-4">
+        <button type="submit" className="button-primary px-5 py-2.5 text-base" disabled={isSubmitting}>
           Save recipe
         </button>
+        <Link to={editing ? `/recipes/${editing.id}` : '/'} className="button">
+          Cancel
+        </Link>
         {errors.root && (
-          <span role="alert" className="text-danger">
+          <span role="alert" className="font-medium text-danger">
             {errors.root.message}
           </span>
         )}

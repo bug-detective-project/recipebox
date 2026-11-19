@@ -9,9 +9,9 @@ export function IngredientList({ ingredients, recipeServings, servings }: { ingr
     return <p className="text-muted">No ingredients yet.</p>;
   }
   return (
-    <ul className="flex list-disc flex-col gap-1 pl-5">
+    <ul className="flex flex-col divide-y divide-border">
       {scaled.map((ingredient) => (
-        <li key={ingredient.id} data-testid="ingredient">
+        <li key={ingredient.id} className="flex items-baseline gap-3 py-2.5 before:size-1.5 before:shrink-0 before:-translate-y-0.5 before:rounded-full before:bg-accent" data-testid="ingredient">
           {describeIngredient(ingredient)}
         </li>
       ))}

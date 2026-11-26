@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   app:
-    uses: bug-detective-project/catalog/.github/workflows/app.yml@18a025975eff16c50cb3c7c6b2eb38147a941da3 # v1.7.0
+    uses: bug-detective-project/catalog/.github/workflows/app.yml@1748ec26123ef389ad9509aff4578e9b64e52ca2 # v1.9.0
     with:
       services-file: services.json
       catalog-ref: 18a025975eff16c50cb3c7c6b2eb38147a941da3
